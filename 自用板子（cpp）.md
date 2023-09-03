@@ -455,6 +455,115 @@ $a^{p-2}a\equiv1(mod \ p)$
 
 接下来通过`qpow(a, p - 2, p)`即可求出a mod p的逆元
 
+#### 快速幂求逆元
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+typedef long long LL;
+
+int n, a, p;
+
+int q_pow(int a, int b, int k) {
+    int ans = 1;
+    while (b) {
+        if (b & 1) ans = (LL)ans * a % k;
+        a = (LL)a * a % k;
+        b >>= 1;
+    }
+    return ans;
+}
+
+int main() {
+    scanf("%d", &n);
+    while (n --) {
+        scanf("%d%d", &a, &p);
+        int res = q_pow(a, p - 2, p);
+        if (a % p) printf("%d\n", res);
+        else puts("impossible");
+    }
+}
+
+作者：syf666
+链接：https://www.acwing.com/blog/content/10351/
+来源：AcWing
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+#### 线性逆元
+
+证明：
+
+线性求解n个数字的逆元，需要找到新元素的逆元同以往求解过逆元的关系。
+以下面式子举例,对于要求解逆元的k,模数为p，有：
+		$ p=ak + b \\ (b < a,k)$
+
+进而有：
+		$ak + b \equiv 0\, (mod\,p)$
+
+两边同时乘以k-1b-1,得到：
+
+$ab^{-1} + k^{-1} \equiv 0\,(mod\,p) \\$
+
+即
+		$k^{-1}\equiv-ab^{-1}\,(mod\,p)$
+
+我们知道，
+		$a=\left \lfloor p \over k\right \rfloor \\$
+
+$b=p\,mod\,k$
+
+因此，有
+
+$k^{-1}\equiv - \left \lfloor p\over k\right \rfloor(p\,mod\,k)^{-1}$
+
+```cpp
+inv[1] = 1;
+for(int i = 2;i <= n;i++){
+	inv[i] = (p - p / i) * inv[p % i] % p;
+}
+```
+
+求解n个数字不同数字的逆元
+
+求解n个不同数字的逆元，可以先维护一个前缀积，其最后一项是所有数字的乘积，求该项的逆元即求所有项逆元的乘积。由于逆元的特殊性质，逆元的乘积乘上其中某个元素即会消去对应的元素，因此我们可以借助前缀积来逐个迭代处理出所有数字的逆元。
+
+$(∏\limits^n\limits_{i=1}a_i)^{−1}≡∏\limits^n\limits_{i=1}a_i^{-1}(mod\ p)$
+
+或
+
+$(a_1a_2...a_n)^{-1}\equiv a_1^{-1}a_2^{-1}...a_n^{-1}(mod\ p)$
+
+且有
+
+$∏\limits_{i=1}\limits^na^{−1}_i∗a_n≡∏\limits^{n-1}_{i=1}a_i^{-1}$
+
+于是便可以处理处所有元素的逆元：
+
+```cpp
+/*s是前缀积，inv是逆元*/
+s[1] = a[1];
+/*计算前缀积*/
+for(int i = 2;i <= n;i++){
+	s[i] = s[i - 1] * a[i] % p;
+}
+/*处理所有元素乘积的逆元，使用快速幂发求解单个逆元*/
+inv[n] = fpow(s[n],p - 2);
+/*逆元的前缀积*/
+for(int i = n - 1;i >= 1;i--){
+	inv[i] = inv[i + 1] * a[i + 1] % p;
+}
+/*计算全部逆元*/
+for(int i = 2;i <= n;i++){
+	inv[i] = inv[i] * s[i - 1] % p;
+}
+————————————————
+版权声明：本文为CSDN博主「卷儿~」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/wayne_lee_lwc/article/details/107870741
+```
+
 ### 矩阵
 
 #### 矩阵快速幂
@@ -805,9 +914,9 @@ Dijkstra算法总体流程：
 
 1. dist[1] = 0, dist[i] = +$\infty$
 2. for i : 1 ~ n
-    - t$\leftarrow$不在s中的距离最近的点（其中s表示当前已确定最短距离的点的集合）$\color{green}{O(n^2)}$
-    - s$\leftarrow$ t $\ \color{green}{n \times O(1)}$
-    - 用t更新其他点的距离 $\ \color{green}{O(m)}$
+   - t$\leftarrow$不在s中的距离最近的点（其中s表示当前已确定最短距离的点的集合）$\color{green}{O(n^2)}$
+   - s$\leftarrow$ t $\ \color{green}{n \times O(1)}$
+   - 用t更新其他点的距离 $\ \color{green}{O(m)}$
 
 朴素版dijkstra算法时间复杂度是O（$n^2$）（其中n代表图中点的个数）
 
@@ -856,6 +965,81 @@ int main(){
         int a, b, c;
         scanf("%d%d%d", &a, &b, &c);
         g[a][b] = min(g[a][b], c); //这里是用来处理重边的情况，重边取最短边即可
+    }
+    printf("%d\n", dijkstra());
+    return 0;
+}
+```
+
+#### 堆优化的Dijkstra算法
+
+堆优化版Dijkstra算法总体流程：
+
+1. dist[1] = 0, dist[i] = +$\infty$
+2. for i : 1 ~ n
+   - t$\leftarrow$不在s中的距离最近的点（其中s表示当前已确定最短距离的点的集合）$\color{green}{O(n)}$
+   - s$\leftarrow$ t $\ \color{green}{O(n)}$
+   - 用t更新其他点的距离 $\ \color{green}{O(mlog(n))}$
+
+堆优化版dijkstra算法时间复杂度是O（$mlog(n)$）（其中n代表图中点的个数, m代表边的个数）
+
+$\color {red} {因此适合用于稀疏图，即边少点多的图}$
+
+```cpp
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <queue>
+#include <cstring>
+
+using namespace std;
+
+typedef pair<int, int> PII;
+
+const int N = 150010;
+int h[N], e[N], ne[N], idx;
+int w[N];
+int dist[N];
+bool st[N];
+int n, m;
+
+void add(int x, int y, int c){
+    w[idx] = c;
+    e[idx] = y;
+    ne[idx] = h[x];
+    h[x] = idx++;
+}
+
+int dijkstra(){
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    priority_queue<PII, vector<PII>, greater<PII>> heap;
+    heap.push({0, 1});
+    while(heap.size()){
+        PII k = heap.top();
+        heap.pop();
+        int ver = k.second, distance = k.first;
+        if(st[ver]) continue;
+        st[ver] = true;
+        for(int i = h[ver]; i != -1; i = ne[i]){
+            int j = e[i];
+            if(dist[j] > distance + w[i]){
+                dist[j] = distance + w[i];
+                heap.push({dist[j], j});
+            }
+        }
+    }
+    if(dist[n] == 0x3f3f3f3f) return -1;
+    else return dist[n];
+}
+
+int main(){
+    memset(h, -1, sizeof h);
+    scanf("%d%d", &n, &m);
+    while(m --){
+        int x, y, c;
+        scanf("%d%d%d", &x, &y, &c);
+        add(x, y, c);
     }
     printf("%d\n", dijkstra());
     return 0;
@@ -956,6 +1140,7 @@ int main()
 }
 
 ```
+
 循环队列
 
 ```cpp
