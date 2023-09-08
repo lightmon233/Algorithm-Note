@@ -642,6 +642,40 @@ int main(){
 
 ```
 
+### 高斯消元法
+
+```cpp
+int gauss() {
+    int c, r;
+    for (r = 1, c = 1; c <= n; c ++) {
+        int t = r;
+        for (int i = r + 1; i <= n; i ++)
+            if (fabs(a[i][c]) - fabs(a[t][c]) > eps) t = i;
+        if (fabs(a[t][c]) < eps) continue;
+        if (t != r) swap(a[t], a[r]);
+        for (int i = n + 1; i >= c; i --) a[r][i] /= a[r][c];
+        for (int i = r + 1; i <= n; i ++) {
+            if (fabs(a[i][c]) > eps)
+                for (int j = n + 1; j >= c; j --)
+                    a[i][j] -= a[r][j] * a[i][c];
+        }
+        r ++;
+    }
+    if (r <= n) {
+        for (int i = r; i <= n; i ++) {
+            if (fabs(a[i][n + 1]) > eps) return 2; // 代表有无穷多组解
+        }
+        return 1; // 代表无解
+    }
+    for (int i = n; i >= 1; i --) {
+        for (int j = i + 1; j <= n; j ++) {
+            a[i][n + 1] -= a[i][j] * a[j][n + 1];
+        }
+    } // 代表有唯一组解
+    return 0;
+}
+```
+
 ### 高斯-约当消元法
 
 #### 例1. 高斯消元法 洛谷P3389
