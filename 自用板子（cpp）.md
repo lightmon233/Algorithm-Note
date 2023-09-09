@@ -564,6 +564,24 @@ for(int i = 2;i <= n;i++){
 原文链接：https://blog.csdn.net/wayne_lee_lwc/article/details/107870741
 ```
 
+### 扩展欧几里得算法
+
+```cpp
+int exgcd(int a, int b, int &x, int &y)  // 扩展欧几里得算法, 求x, y，使得ax + by = gcd(a, b)
+{
+    if (!b)
+    {
+        x = 1; y = 0;
+        return a;
+    }
+    //d始终都是a和b的最大公约数, 倒着传参是为了简化计算
+    int d = exgcd(b, a % b, y, x);
+    y -= (a / b) * x;
+    return d;
+    //返回d，使得能够在求最大公约数的同时完成x，y的凑整
+}
+```
+
 ### 矩阵
 
 #### 矩阵快速幂
@@ -715,21 +733,42 @@ int main(){
 
 ### 筛质数
 
+#### 朴素筛法
+
+```cpp
+void getPrimes(int n) {
+    for (int i = 2; i <= n; i ++) {
+        if (!st[i]) {
+            primes[cnt ++] = n;
+        }
+        for (int j = i + i; i <= n; j += i) st[j] = true;
+    }
+}
+```
+
+时间复杂度分析：
+
+每个数的倍数都被筛掉了，因此时间复杂度为：
+
+$\frac{n}{2}+\frac{n}{3}+\dots+\frac{n}{n}$
+
+$=n(\frac{1}{2}+\frac{1}{3}+...+\frac{1}{n})$
+
+$=n(ln(n)+c)$	其中c是一个欧拉常数，是一个无限不循环小数，值是0.577左右
+
+#### 质数定理
+
+1~n中有$\frac{n}{ln(n)}$个数
+
+我们可以只用把质数的倍数删掉，这样粗劣的时间复杂度就是$\frac{n(ln(n))}{ln(n)}$，但是这只是个粗略的估计，这个估计是不对的，真实的时间复杂度是$O(nlog(log(n)))$。
+
+这个算法也就是下面的埃氏筛法。
+
 #### 埃氏筛法
 
 ```cpp
-#include <iostream>
-
-using namespace std;
-
-const int N = 1000;
-
-int prime[N];
-int st[N];
-int n, k;
-
 //O(nloglogn)
-int getprimes(int n){
+int getPrimes(int n){
     int idx = 1;
     for(int i = 2; i <= n; i ++){
         if(!st[i]){
@@ -739,58 +778,47 @@ int getprimes(int n){
     }
     return idx - 1;
 }
-
-int main(){
-    int t;
-    cin >> t;
-    while(t --){
-        cin >> n >> k;
-        int cnt = getprimes(n);
-        int res = 0;
-        for(int i = 1; i <= cnt; i ++){
-            for(int j = 1; j <= i - 2; j ++){
-                if(prime[i] == prime[j] + prime[j + 1] + 1){
-                    res ++;
-                }
-            }
-        }
-        if(res >= k) puts("YES");
-        else puts("NO");
-    }
-    return 0;
-}
 ```
 
 #### 线性筛法
 
+线性筛法在10^7^次方的情况下会比埃氏筛法快一倍左右，在10^6^的情况下两个算法速度差不多。
+
+整体思路：n只会被它的最小质因子筛掉
+
 ```cpp
-#include <iostream>
-
-using namespace std;
-
-const int N = 1e6 + 1;
-bool st[N];
-int cnt;
-int primes[N];
-
-void get_primes(int n){
+void getPrimes(int n){
     for(int i = 2; i <= n; i++){
         if(!st[i]) primes[cnt++] = i; 
+        // primes[j] <= n / i即primes * i <= n，即x <= n
         for(int j = 0; primes[j] <= n / i; j++){
+            // 当还没有执行到下面的break语句时
+            // 由于我们是从小到大枚举所有质数的，且还没有枚举到i的最小质因子
+            // 所以当前的primes[j]一定是primes[j] * i的最小质因子
+            // 所以就把primes[j] * i筛掉
             st[primes[j] * i] = true;
+            // 当这段代码执行的时候就意味着primes[j]一定是i的最小质因子
+            // primes[j]是从小到大枚举的质数，当第一次满足i % primes[j] == 0的时候
+            // 说明primes[j]就一定是i的最小质因子
+            // 同时此时primes[j]也一定是primes[j] * i的最小质因子
+            // 因此上面的筛成立
+            // 当如果此时再继续向后枚举质数，接下来的质数就不是primes[j] * i的最小质因子了
+            // 因此要即时break掉
             if(i % primes[j] == 0) break;
         }
     }
 }
-
-int main(){
-    int n; cin >> n;
-    get_primes(n);
-    cout << cnt;
-    return 0;
-}
-
 ```
+
+证明线性：
+
+对于一个合数x，假设primes[j]是x的最小质因子，当i枚举到x/primes[j]的时候，我们就可以在4到18行把x给筛掉。
+
+第五行的判断条件不需要加j <= cnt
+
+因为当i是合数的时候，primes[j]一定会在枚举到i的最小质因子时停下来，而i的最小质因子一定是小于i的，会在i之前被标记为primes，放到primes数组中来。
+
+当i是质数的时候，当primes[j]=i的时候，枚举也会停下来。（是在break的时候停下来）
 
 ### 组合数
 
