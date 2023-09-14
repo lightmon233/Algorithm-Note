@@ -871,6 +871,37 @@ int euler(int a) {
 }
 ```
 
+#### 筛法求欧拉函数
+
+$φ(ab)= \frac {φ(a)φ(b)gcd(a,b)} {φ(gcd(a,b))}$
+
+```cpp
+int getEuler(int n){
+    phi[1] = 1;
+    for(int i = 2; i <= n; i ++){
+        if(!st[i]){
+            prime[cnt ++] = i;
+            phi[i] = i - 1;
+        }
+        for(int j = 0; prime[j] <= n / i; j ++){
+            st[prime[j] * i] = true;
+            if(i % prime[j] == 0){
+                // 此时pj是i的最小质因子，i的质因子中有j了，所以pj*i的所有(1-pj*i的质因子)都在phi[i]中计算过了，因此两者的区别就只有式子开头的N，所以phi[pj * i] = phi[i] * prime[j]
+                phi[prime[j] * i] = phi[i] * prime[j];
+                break;
+            }
+            // 这里pj - 1就是(1 - 1 / pj) * pj
+            phi[prime[j] * i] = phi[i] * (prime[j] - 1);
+        }
+    }
+    int res = 0;
+    for(int i = 1; i <= n; i ++){
+        res += phi[i];
+    }
+    return res;
+}
+```
+
 ### 组合数
 
 #### 组合数1
