@@ -107,9 +107,31 @@ int main()
 原文链接：https://blog.csdn.net/qq_60404548/article/details/125676237
 ```
 
-
-
 ## 基础算法
+
+### 取模运算
+
+```cpp
+void add(int &a, int b) {
+    a += b;
+    if (a >= MOD)
+        a -= MOD;
+}
+
+int sum(int a, int b) {
+    a += b;
+    if (a >= MOD)
+        a -= MOD;
+    if (a < 0)
+        a += MOD;
+    return a;
+}
+
+int mul(int a, int b) {
+    return (a * 1LL * b) % MOD;
+}
+```
+
 
 ### 排序
 
@@ -3200,4 +3222,3 @@ int main(void)
 版权声明：本文为CSDN博主「两米长弦」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/peng0614/article/details/79460863
 ```
-
