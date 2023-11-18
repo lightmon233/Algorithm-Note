@@ -38,8 +38,10 @@ const int N = 1e5 + 10, M = 2e5 + 10;
 const int INF = (1LL << 31) - 1;
 const LL LLF = 2e18 - 1;
 
-// 随机数生成器
+// 用于检测程序占用内存大小
 bool Mbe;
+
+// 随机数生成器
 // mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
 mt19937_64 rnd(1064);
 int rd(int l, int r) {return rnd() % (r - l + 1) + l;}
@@ -281,5 +283,19 @@ void output(int u) {
 }
 */
 
-
 /* template above */
+
+void solve() {
+
+}
+
+bool Med;
+int main() {
+    fprintf(stderr, "%.3lf MB\n", (&Mbe - &Med) / 1048576.0);
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int T = 1;
+    cin >> T;
+    while (T --) solve();
+    cerr << 1e3 * clock() / CLOCKS_PER_SEC << " ms\n";
+    return 0;
+}
