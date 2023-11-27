@@ -292,7 +292,7 @@ void solve() {
 
 bool Med;
 int main() {
-    fprintf(stderr, "%.3lf MB\n", (&Mbe - &Med) / 1048576.0);
+    fprintf(stderr, "%.3lf MB\n", (&Med - &Mbe) / 1048576.0);
     // ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
     int T = 1;
     cin >> T;
