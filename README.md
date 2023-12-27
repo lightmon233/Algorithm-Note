@@ -1493,390 +1493,178 @@ void subseq1(int a[], int l, int r){ // 对原数组的每个下标i(从1开始)
 
 ### 背包问题
 
-鄙人才疏学浅，此中鄙陋甚多，望海涵。
-
 #### 01背包
 
-先简单的描述一下题目：就是在一定体积限制下选物品放入背包中，使其价值达到最大。（AcWing 2. 01背包问题）
-
-特征：一个物品最多只能选一次。
-思路：
-{
-状态表示：f\[i][j]表示从前i个物品里选择（一个物品最多选一次），总体积不超过j的价值；
-属性：最大值
-状态计算：<font color=red>```f[i][j]=max(f[i-1][j],f[i-1][j-w[i]]+v[i])```</font>(解释；表示从前i个物品里选择体积不超过j的物品价值的最大值是从要么不选这个物品，和要么选择一个这个物品的价值之间进行选择)
-}
+状态表示：$f[i][j]$:在前i个物品中选，总体积不超过j的最大价值。
 
 ##### 01背包问题的二维代码
 
-C++ 代码
-
 ```cpp
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
-
-const int N=1010;
-
-int n,m;
-int f[N][N],w[N],v[N];
-
-int main()
 {
-    cin>>n>>m;
     //动态规划问题一般下标从1开始，便于从0的情况递推结果。
-    for(int i=1;i<=n;i++) cin>>w[i]>>v[i];
-
-    for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++)
-        {
-            f[i][j]=f[i-1][j];
-            if(j>=w[i])
-                f[i][j]=max(f[i][j],f[i-1][j-w[i]]+v[i]);
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            f[i][j] = f[i - 1][j];
+            if (j >= v[i]) {
+                f[i][j] = max(f[i][j], f[i - 1][j - v[i]] + w[i]);
+            }
         }
-    
-    cout<< f[n][m] <<endl;
-    return 0;
-
+    }
 }
 ```
 
-显然不优化到一维还是不能满足我们追求完美的精神，一维优化的思路：我们先尝试着把f[i][j]中[i]这一维去掉，对于<font color=red>```if(j>=w[i])```</font>,我们只需要让j时刻大于w[i]即可，但主要的矛盾是在<font color=red>`f[i][j]=max(f[i][j],f[i-1][j-w[i]]+v[i])`</font>中，我们去掉了[i-1]这一维，由于j始终是从小到大枚举，便不能保证它是从上一次更新好的状态转移过来的，会实现自我更新（顺带一提，j的枚举正是01背包与完全背包区别的关键，当j从小到大枚举时便能实现自我更新，摆脱了物品个数这一限制），因此当我们将j从大到小枚举时f[j]就不会实现自我更新，保证一个物品只能选一次的这个限制）
-
 ##### 01背包一维优化
 
-C++ 代码
-
 ```cpp
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
-
-const int N=1010;
-
-int f[N];
-int w[N],v[N];
-int n,m;
-
-int main()
 {
-    cin>>n>>m;
-    for(int i=1;i<=n;i++) cin>>w[i]>>v[i];
-
-    for(int i=1;i<=n;i++)
-        for(int j=m;j>=w[i];j--)
-        f[j]=max(f[j],f[j-w[i]]+v[i]);
-    
-    cout<<f[m]<<endl;
-    return 0;
-
+    for (int i = 1; i <= n; i ++) {
+        for (int j = m; j >= v[i]; j --) {
+            f[j] = max(f[j], f[j - v[i]] + w[i]);
+        }
+    }
 }
-
-
 ```
 
 #### 完全背包问题
 
-先简单的描述一下题目：就是在一定体积限制下选物品放入背包中，使其价值达到最大。（AcWing 3. 完全背包问题）
-
 特征：一个物品可以选无数次。
-思路：
-{
-状态表示：f[i][j]表示从前i个物品里选择（一个物品可以选多次），总体积不超过j的价值；
-属性：最大值
-状态计算：<font color=red>`f[i][j]=max(f[i][j],f[i-1][j-k*w[i]]+k*v[i])`</font>(解释；表示从前i个物品里选择体积不超过j的物品价值的最大值是从要么不选这个物品，和要么选择K个这个物品的价值之间进行选择，其中当k=0时就是f\[i-1\][j]的情况)
-}
+
+状态表示：$f[i][j]$表示从前i个物品里选择（一个物品可以选多次），总体积不超过j的最大价值。
 
 ##### 完全背包问题的三重循环代码
 
-C++ 代码
-
 ```cpp
-#include<iostream>
-
-using namespace std;
-
-const int N=1010;
-
-int f[N][N];
-int w[N],v[N];
-
-int main()
 {
-    int n,m;
-    cin>>n>>m;
-    for(int i=1;i<=n;i++)   cin>>w[i]>>v[i];
-
-    for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++)
-            for(int k=0;k*w[i]<=j;k++)
-                f[i][j]=max(f[i][j],f[i-1][j-k*w[i]]+k*v[i]);
-    
-    cout<<f[n][m]<<endl;
-    return 0;
-
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            for (int k = 0; k * v[i] <= j; k ++) {
+                f[i][j] = max(f[i][j], f[i - 1][j - k * v[i]] + k * w[i]);
+            }
+        }
+    }
 }
 ```
-
-接下来我们应该考虑二重循环二维优化了，毕竟o(n3)的时间复杂度太高，极容易被卡(百分之99哦)。
-
-
 
 ##### 二重循环二维的优化过程
 
 ```cpp
-f[i][j]     =max(f[i][j],f[i-1][j-k*w[i]]+k*v[i]);
-f[i][j]     =max(f[i-1][j],f[i-1][j-w[i]]+v[i],f[i-1][j-2*w[i]]+2*v[i],.....)
-f[i][j-w[i]]=max(          f[i-1][j-w[i]],     f[i-1][j-2*w[i]]+1*v[i],.....)
+// 01
+f[i][j]        = max(f[i][j],            f[i - 1][j - k * v[i]] + k * w[i]);
+// 完全
+f[i][j]        = max(f[i - 1][j],        f[i - 1][j - v[i]] + w[i], f[i - 1][j - 2 * v[i]] + 2 * w[i], .....)
+f[i][j - v[i]] = max(f[i - 1][j - v[i]], f[i - 1][j - 2 * v[i]] + 1 * w[i], .....)
 ```
-
-我们不难发现，把<font color=red>`f[i][j]`</font>展开会发现上面的规律。
-因此凭借这个我们就可以消灭掉k这个大麻烦了，因为<font color=red>`f[i][j]=max(f[i-1][j],f[i][j-w[i]]+v[i]);`</font>
-
-
-
-C++代码
+三式代入二式，得：
+<font color=red>`f[i][j] = max(f[i - 1][j],f[i][j - v[i]] + w[i]);`</font>
 
 ```cpp
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
-
-const int N=1010;
-
-
-int f[N][N];
-int n,m;
-int w[N],v[N];
-
-int main()
 {
-    cin>>n>>m;
-    for(int i=1;i<=n;i++) cin>>w[i]>>v[i];
-
-    for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++)
-        {
-            f[i][j]=f[i-1][j];
-            if(j>=w[i])
-            f[i][j]=max(f[i][j],f[i][j-w[i]]+v[i]);
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            f[i][j] = f[i - 1][j];
+            if (j >= v[i]) {
+                f[i][j] = max(f[i][j], f[i][j - v[i]] + w[i]);
+            }
         }
-    
-    cout<< f[n][m] <<endl;
-    return 0;
-
+    }
 }
 ```
 
-
-引用一下上面01背包二维的代码
-
-```cpp
-for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++)
-        {
-            f[i][j]=f[i-1][j];
-            if(j>=w[i])
-                f[i][j]=max(f[i][j],f[i-1][j-w[i]]+v[i]);
-        }
-```
-
-再引用一下完全背包的二维代码
+##### 完全背包一维最终优化
 
 ```cpp
- for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++)
-        {
-            f[i][j]=f[i-1][j];
-            if(j>=w[i])
-            f[i][j]=max(f[i][j],f[i][j-w[i]]+v[i]);
-        }
-```
-
-写到这里，你就会惊奇的发现这个代码和01背包真的只有一点点不一样啊！聪明的同学们已经观察到了就是
-<font color=red>`f[i][j]=max(f[i][j],f[i-1][j-w[i]]+v[i]);`</font> 和 <font color=red>`f[i][j]=max(f[i][j],f[i][j-w[i]]+v[i]);`</font>的不同
-不难想到之前提过的能否更新自己的区别，也就是更新源于本层（指i）还是上一层（i-1），我们之前也说过这也就是为什么一维优化后01背包和完全背包一个是正枚举j ，一个是倒枚举j的原因了。
-
-##### 完全背包一维最终优化(虽然经历了千辛万苦)
-
-C++代码
-
-```cpp
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
-
-const int N=1010;
-
-int f[N],w[N],v[N];
-
-int main()
 {
-    int n,m;
-    cin>>n>>m;
-    for(int i=1;i<=n;i++)   scanf("%d%d",&w[i],&v[i]);
-    for(int i=1;i<=n;i++)
-        for(int j=w[i];j<=m;j++)
-            f[j]=max(f[j],f[j-w[i]]+v[i]);
-
-    cout<< f[m] <<endl;
-    return 0;
-
+    for (int i = 1; i <= n; i ++) {
+        for (int j = v[i]; j <= m; j ++) {
+            f[j] = max(f[j], f[j - v[i]] + w[i]);
+        }
+    }
 }
 ```
 
 #### 多重背包1
 
-先简单的描述一下题目：就是在一定体积限制下选物品放入背包中，使其价值达到最大。（AcWing 3. 完全背包问题）
-
 特征：一个物品有严格的次数限制。
-思路：
-{
-状态表示：f\[i][j]表示从前i个物品里选择（一个物品有严格的次数限制），总体积不超过j的价值；
-属性：最大值
-状态计算：<font color=red>`f[i][j]=max(f[i-1][j],f[i-1][j-k*w[i]]+k*v[i])`</font>(解释；表示从前i个物品里选择体积不超过j的物品价值的最大值是从要么不选这个物品，和要么选择K个这个物品的价值之间进行选择)
-}
-
-这里不难发现其实朴素版的多重背包思路和三维的完全背包问题思路几乎一致，其实也就多了一个限制条件而已（就是对k的大小的限制），这里就不再赘述了，直接上代码！
+状态表示：$f[i][j]$表示从前i个物品里选择（一个物品有严格的次数限制），总体积不超过j的价值；
 
 ##### 多重背包问题的三重循环代码
 
 ```cpp
-#include<iostream>
-#include<algorithm>
+//s[i]表示第i种物品共有s[i]个
+int f[N][N], s[N], v[N], w[N];
 
-using namespace std;
-
-const int N=110;
-
-int f[N][N],s[N],w[N],v[N];
-
-int main()
 {
-    int n,m;
-    cin>>n>>m;
-    for(int i=1;i<=n;i++) cin>>w[i]>>v[i]>>s[i];
-
-    for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++)
-            for(int k=0;k<=s[i] && k*w[i]<=j;k++)
-                f[i][j]=max(f[i][j],f[i-1][j-k*w[i]]+k*v[i]);
-    
-    cout<< f[n][m] <<endl;
-    return 0;
-
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= m; j ++) {
+            for (int k = 0; k <= s[i] && k * v[i] <= j; k ++) {
+                f[i][j] = max(f[i][j], f[i - 1][j - k * v[i]] + k * w[i]);
+            }
+        }
+    }
 }
 ```
-
-实际上也就多了<font color=red>`k<=s[i]`</font>这个限制而已。
-那么我们来想想既然上面的问题都可以一维优化，那么这个多重背包问题能不能优化为一维呢（其实在这里这个优化实用性并不大，因为多数情况下多重背包朴素版的时间复杂度太高，一般都会被卡掉，而且优化为一维时间复杂度并不会减少，但是为了追求完美，就必须。。。）我们观察一下多重背包问题的状态转移方程
-<font color=red>`f[i][j]=max(f[i][j],f[i-1][j-k*w[i]]+k*v[i]);`</font>当我们去掉[i]这一维时，又产生了似曾相识的问题，没错，就是我们在优化01背包时，保证不能自我更新，需要凭借上一层的更新结果来更新本层，聪明的同学一定想到了，既然矛盾相似，那么优化的结果应该也相似，没错，结果就是将j 倒枚举。我们先给出代码，再验证会不会仍然存在矛盾。
 
 ##### 多重背包问题一维优化代码
 
 ```cpp
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
-
-const int N=110;
-
-int f[N],s[N],w[N],v[N];
-
-int main()
 {
-    int n,m;
-    cin>>n>>m;
-    for(int i=1;i<=n;i++) cin>>w[i]>>v[i]>>s[i];
-
-    for(int i=1;i<=n;i++)
-        for(int j=m;j>=w[i];j--)
-            for(int k=0;k<=s[i] && k*w[i]<=j;k++)
-                f[j]=max(f[j],f[j-k*w[i]]+k*v[i]);
-    
-    cout<< f[m] <<endl;
-    return 0;
-
+    for (int i = 1; i <= n; i ++) {
+        for (int j = m; j >= v[i]; j --) {
+            for (int k = 0; k <= s[i] && k * v[i] <= j; k ++) {
+                f[j] = max(f[j], f[j - k * v[i]]+ k * w[i]);
+            }
+        }
+    }
 }
 ```
 
-结合01背包来理解其实不存在矛盾（还不懂的同学可以再回去研究一下01背包的优化过程）
-
 ##### 多重背包问题打包版
 
-问题和上一个多重背包问题一样，只不过在这里数据范围变大了许多（AcWing 5. 多重背包问题 II）
-思路:
-{
-既然三重循环时间复杂度怎么高，那我们能不能想一种避免三重循环的方法呢？答案是肯定的！
-这里我们要介绍一个二进制数的重要性质 就是任何数N都能由它的2的从0 到 logN 次方加和可得 （最后一个不够二的整次方数补齐即可），那么这样的话，我们就可以将一个有严格次数限制的物品打包成为只能使用一次的小包，对应的小包的体积和价值都要发生变化（与小包中物品个数有关）
+利用二进制优化的思想，把同一种类型的物品按照2的不同次幂个为一组进行打包，从而优化时间复杂度。
 
-状态表示和状态计算同01背包。
-}
-
-##### 多重背包最终优化代码
-
-C++代码
+时间复杂度：$O(nmlogs)$
 
 ```cpp
-#include<iostream>
-#include<algorithm>
+// s[i]存储第i种物品的个数
+// a, b数组存的是原体积和原价值
+int a[N], b[N];
+int v[N], w[N], s[N];
 
-using namespace std;
-
-const int N=11000,M=2010;
-//这里N的大小是1000（log1000 + 1） 计算出来的。
-
-int w[N],v[N],cnt;
-int f[M];
-
-int main()
 {
-    int n,m;
-    cin>>n>>m;
-    for(int i=1;i<=n;i++)
-    {
-        int a,b,c;
-        scanf("%d%d%d",&a,&b,&c);
-        int t=1;
-        while(c)
-        {
-           if(c>=t)
-           {
-               cnt++;
-               w[cnt]=a*t;
-               v[cnt]=b*t;
-               c-=t;
-               t*=2;
-           }
-           else if(c)
-           {
-               cnt++;
-               w[cnt]=a*c;
-               v[cnt]=b*c;
-               break;
-           }
+    int cnt = 0;
+    for (int i = 1; i <= n; i ++) {
+        int k = 1;
+        int ss = s[i];
+        while (k <= s) {
+            cnt ++;
+            v[cnt] = k * a[i];
+            w[cnt] = k * b[i];
+            s -= k;
+            k *= 2;
+        }
+        if (s > 0) {
+            cnt ++;
+            v[cnt] = s * a;
+            w[cnt] = s * b;
         }
     }
-    for(int i=1;i<=cnt;i++)
-        for(int j=m;j>=w[i];j--)
-            f[j]=max(f[j],f[j-w[i]]+v[i]);
-
-    cout<< f[m] <<endl;
-    return 0;
-
+    for (int i = 1; i <= cnt; i ++) {
+        for (int j = m; j >= v[i]; j --) {
+            f[j] = max(f[j], f[j - v[i]] + w[i]);
+        }
+    }
 }
+```
 
+##### 多重背包单调队列优化
+
+时间复杂度：$O(nm)$
+
+```cpp
 
 ```
 
 #### 分组背包问题
-
-先简单的描述一下题目：就是在一定体积限制下选物品放入背包中，使其价值达到最大。（AcWing 9. 分组背包问题）
 
 特征：一组物品只能选择其中的一个。
 思路：
