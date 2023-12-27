@@ -1660,7 +1660,30 @@ int v[N], w[N], s[N];
 
 时间复杂度：$O(nm)$
 
+<img src="https://cdn.acwing.com/media/article/image/2023/04/15/226750_2e51f2afdb-_~948ZKD$1S{~4(4~{LS_Z2.png">
+
 ```cpp
+int f[N];
+int g[N]; // g是f的滚动数组
+int v[N], w[N], s[N];
+
+{
+    for (int i = 1; i <= n; i ++) {
+        memcpy(g, f, sizeof f); //把上一层的f存在g里
+        for (int j = 0; j < v[i]; j ++) {
+            int hh = 0, tt = -1;
+            //滑动窗口长度为s，不包括f[k]本身，因此f[k] = max(f[k], max(others))
+            for (int k = j; k <= m; k += v[i]) {
+                if (hh <= tt && q[hh] < k - s[i] * v[i]) hh ++;
+                if (hh <= tt) f[k] = max(f[k], g[q[hh]] + (k - q[hh]) / v[i] * w[i]);
+                //由图中表达式知g数组中的值都是不包含w的，这里我们进行比较只需比较绝对值
+                //因此只要营造出递减数列的效果即可
+                while (hh <= tt && g[q[tt]] - (q[tt] - j) / v[i] * w[i] <= g[k] - (k - j) / v[i] * w[i]) tt --;
+                q[++tt] = k;
+            }
+        }
+    }
+}
 
 ```
 
