@@ -1690,57 +1690,31 @@ int v[N], w[N], s[N];
 #### 分组背包问题
 
 特征：一组物品只能选择其中的一个。
-思路：
-{
-状态表示：f\[i][j]表示从前i组物品里选择(一组物品只能选择其中的一个)，总体积不超过j的价值；
-属性：最大值
+
+状态表示：f\[i][j]表示从前i组物品里选择(一组物品只能选择其中的一个)，总体积不超过j的最大价值；
 状态计算：<font color=red>`f[i][j]=max(f[i-1][j],f[i-1][j-w[i][k]]+v[i][k])`</font>(解释；表示从前i组物品里选择体积不超过j的物品价值的最大值是从要么不选这个物品，和要么选择这个组中第k个物品的价值之间进行选择)
-}
-其实这个问题更像是套着多重背包外套的01背包问题，其实不难想到，我们只需要在二维01背包的基础上再枚举一个中间量k即可（k表示在这个组中的第k个物品），这里也不再赘述了，直接上代码。
 
 ##### 分组背包问题一维优化代码
 
 ```cpp
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
-
-const int N=110;
-
+// w[i][j]代表第i组物品中的第j个的价值，v同
 int w[N][N],v[N][N];
+// s[i]代表第i组物品有多少个
 int f[N],s[N];
 
-int main()
 {
-    int n,m;
-    cin>>n>>m;
-    for(int i=1;i<=n;i++)
-    {
-        cin>>s[i];
-        for(int j=1;j<=s[i];j++)
-            cin>>w[i][j]>>v[i][j];
+    for (int i = 1; i <= n; i ++) {
+        for (int j = m; j >= 0; j --) {
+            for (int k = 1; k <= s[i]; k ++) {
+                if (v[i][k] <= j) {
+                    f[j] = max(f[j], f[j - v[i][k]] + w[i][k]);
+                }
+            }
+        }
     }
-    for(int i=1;i<=n;i++)
-        for(int j=m;j>=1;j--)
-            for(int k=1;k<=s[i];k++)
-                if(w[i][k]<=j)
-                    f[j]=max(f[j],f[j-w[i][k]]+v[i][k]);
-
-    cout<< f[m] <<endl;
     return 0;
-
 }
 ```
-
-我本人觉得这个是上述问题最好理解的一个问题（哈哈）
-
-我们再总结一下，这五类的背包问题都可以写成一维优化的形式，这其中只有完全背包是正枚举！！！
-
-作者：Accepting
-		链接：https://www.acwing.com/blog/content/1992/
-		来源：AcWing
-		著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 # 琐碎知识
 
