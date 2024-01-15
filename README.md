@@ -155,44 +155,6 @@ vector<int> div(vector<int> &A, int b, int &r) {
 }
 ```
 
-#### 高精度乘高精度
-
-```cpp
-#include <bits/stdc++.h>
-
-using namespace std;
-
-const int N = 1e5;
-const int M = 1e8;
-
-int a[N], b[N], c[M];
-
-int main(){
-    char a1[N], b1[N];
-    int lena, lenb, lenc, jw = 0;
-    cin >> a1 >> b1;
-    lena = strlen(a1);
-    lenb = strlen(b1);
-    lenc = lena + lenb;
-    for (int i = 0; i < lena; i++) a[i] = a1[lena - i - 1] - '0';
-    for (int i = 0; i < lenb; i++) b[i] = b1[lenb - i - 1] - '0';
-    for (int i = 0; i < lena; i++) {
-        for (int j = 0; j < lenb; j++) {
-            c[i + j] += a[i] * b[j] + jw;
-            jw = c[i + j] / 10;
-            c[i + j] %= 10;
-        }
-        c[i + lenb] = jw;
-    }
-    for (int i = lenc - 1; i >= 0; i--) {
-        if (0 == c[i] && lenc > 1) lenc--;
-        else break;
-    }
-    for (int i = lenc - 1; i >= 0; i--) cout << c[i];
-    return 0;
-}
-```
-
 ### 离散化
 
 ```cpp
@@ -223,49 +185,6 @@ for (int i = 0, j = 0; i < n; i ++ ) {
     //(1) 对于一个序列，用两个指针维护一段区间
     //(2) 对于两个序列，维护某种次序，比如归并排序中合并两个有序序列的操作
 
-```
-
-### RMQ(倍增)
-
-```cpp
-#include <iostream>
-#include <cmath>
-
-using namespace std;
-
-const int N = 2e5 + 10, M = 20;
-
-int arr[N];
-int f[N][M];
-int n;
-
-void init(){
-    for(int j = 0; j < M; j ++){
-        for(int i = 1; i + (1 << j) - 1 <= n; i ++){
-            if(!j) f[i][j] = arr[i];
-            else f[i][j] = max(f[i][j - 1], f[i + (1 << (j - 1))][j - 1]);
-        }
-    }
-}
-
-int query(int a, int b){
-    int k = log(b - a + 1) / log(2);
-    return max(f[a][k], f[b - (1 << k) + 1][k]);
-}
-
-int main(){
-    cin >> n;
-    for(int i = 1; i <= n; i ++) scanf("%d", &arr[i]);
-    init();
-    int m;
-    cin >> m;
-    while(m --){
-        int a, b;
-        scanf("%d%d", &a, &b);
-        cout << query(a, b) << endl;
-    }
-    return 0;
-}
 ```
 
 ## 数论与数学知识
@@ -306,16 +225,12 @@ $a^{p-2}a\equiv1(mod \ p)$
 
 #### 快速幂求逆元
 
+基于费马小定理，求$a \ mod \ p$的逆元。
+
+<font color=red>要求是p是一个质数，并且p与a互质。</font>
+
 ```cpp
-#include <iostream>
-
-using namespace std;
-
-typedef long long LL;
-
-int n, a, p;
-
-int q_pow(int a, int b, int k) {
+int qPow(int a, int b, int k) {
     int ans = 1;
     while (b) {
         if (b & 1) ans = (LL)ans * a % k;
@@ -325,20 +240,11 @@ int q_pow(int a, int b, int k) {
     return ans;
 }
 
-int main() {
-    scanf("%d", &n);
-    while (n --) {
-        scanf("%d%d", &a, &p);
-        int res = q_pow(a, p - 2, p);
-        if (a % p) printf("%d\n", res);
-        else puts("impossible");
-    }
+{
+    int res = q_pow(a, p - 2, p);
+    if (a % p) printf("%d\n", res);
+    else puts("impossible");
 }
-
-作者：syf666
-链接：https://www.acwing.com/blog/content/10351/
-来源：AcWing
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
 #### 线性逆元
@@ -370,12 +276,13 @@ $k^{-1}\equiv - \left \lfloor p\over k\right \rfloor(p\,mod\,k)^{-1}$
 
 ```cpp
 inv[1] = 1;
-for(int i = 2;i <= n;i++){
-	inv[i] = (p - p / i) * inv[p % i] % p;
+
+for (int i = 2; i <= n; i++) {
+    inv[i] = (p - p / i) * inv[p % i] % p;
 }
 ```
 
-求解n个数字不同数字的逆元
+求解n个不同数字的逆元
 
 求解n个不同数字的逆元，可以先维护一个前缀积，其最后一项是所有数字的乘积，求该项的逆元即求所有项逆元的乘积。由于逆元的特殊性质，逆元的乘积乘上其中某个元素即会消去对应的元素，因此我们可以借助前缀积来逐个迭代处理出所有数字的逆元。
 
@@ -642,11 +549,6 @@ int getEuler(int n){
 时间复杂度：O(n^2)
 
 ```cpp
-#include <iostream>
-
-using namespace std;
-
-const int N = 2010, mod = 1e9 + 7;
 int c[N][N];
 
 void init(){
@@ -657,18 +559,6 @@ void init(){
         }
     }
 }
-
-int main(){
-    int n;
-    cin >> n;
-    init();
-    while(n --){
-        int a, b;
-        scanf("%d%d", &a, &b);
-        printf("%d\n", c[a][b]);
-    }
-    return 0;
-}
 ```
 
 #### 组合数2
@@ -676,20 +566,12 @@ int main(){
 预处理阶乘
 
 ```cpp
-#include <iostream>
-
-using namespace std;
-
-typedef long long LL;
-
-const int N = 100010, mod = 1e9 + 7;
 int fact[N], infact[N];//存的分别是i的阶乘及其逆元
 
-int qmi(int a, int k, int p)  // 求a^k mod p
-{
+// 求a^k mod p 
+int qPow(int a, int k, int p) {
     int res = 1;
-    while (k)
-    {
+    while (k) {
         if (k & 1) res = (LL)res * a % p;
         a = (LL)a * a % p;
         k >>= 1;
@@ -697,21 +579,17 @@ int qmi(int a, int k, int p)  // 求a^k mod p
     return res;
 }
 
-int main(){
+{
     fact[0] = infact[0] = 1;
-    for(int i = 1; i < N; i ++){
+    for (int i = 1; i < N; i ++) {
         fact[i] = (LL) fact[i - 1] * i % mod;
         infact[i] = (LL) infact[i - 1] * qmi(i, mod - 2, mod) % mod;
     }
-    int n;
-    cin >> n;
-    while(n --){
-        int a, b;
-        scanf("%d%d", &a, &b);
-        //这里要及时取模，否则会爆long long
-        printf("%d\n", (LL) fact[a] * infact[b] % mod * infact[a - b] % mod);
+    int a, b;
+    scanf("%d%d", &a, &b);
+    //这里要及时取模，否则会爆long long
+    printf("%d\n", (LL) fact[a] * infact[b] % mod * infact[a - b] % mod);
     }
-    return 0;
 }
 ```
 
@@ -735,7 +613,7 @@ $sg(x)$: 如果处于最终态，则返回0；否则返回该节点可以到达�
 
 ### 最短路
 
-#### Dijkstra求最短路1
+#### Dijkstra求最短路(朴素版)
 
 Dijkstra算法总体流程：
 
@@ -750,13 +628,6 @@ Dijkstra算法总体流程：
 <font color=red>因此适合用于稠密图，即边多点少的图</font>
 
 ```cpp
-#include <iostream>
-#include <cstring>
-#include <algorithm>
-
-using namespace std;
-
-const int N = 510;
 int n, m;
 int g[N][N]; //存储图，g[i][j]的值是i到j的距离，因为是稠密图，所以用邻接矩阵来存
 int dist[N]; //dist[i]存的是i节点到1节点的最短距离
@@ -784,18 +655,6 @@ int dijkstra(){
     if(dist[n] == 0x3f3f3f3f) return -1;
     return dist[n];
 }
-
-int main(){
-    scanf("%d%d", &n, &m);
-    memset(g, 0x3f, sizeof g);
-    while(m --){
-        int a, b, c;
-        scanf("%d%d%d", &a, &b, &c);
-        g[a][b] = min(g[a][b], c); //这里是用来处理重边的情况，重边取最短边即可
-    }
-    printf("%d\n", dijkstra());
-    return 0;
-}
 ```
 
 #### 堆优化的Dijkstra算法
@@ -813,17 +672,8 @@ int main(){
 $\color {red} {因此适合用于稀疏图，即边少点多的图}$
 
 ```cpp
-#include <iostream>
-#include <cstdio>
-#include <algorithm>
-#include <queue>
-#include <cstring>
-
-using namespace std;
-
 typedef pair<int, int> PII;
 
-const int N = 150010;
 int h[N], e[N], ne[N], idx;
 int w[N];
 int dist[N];
@@ -859,137 +709,88 @@ int dijkstra(){
     if(dist[n] == 0x3f3f3f3f) return -1;
     else return dist[n];
 }
-
-int main(){
-    memset(h, -1, sizeof h);
-    scanf("%d%d", &n, &m);
-    while(m --){
-        int x, y, c;
-        scanf("%d%d%d", &x, &y, &c);
-        add(x, y, c);
-    }
-    printf("%d\n", dijkstra());
-    return 0;
-}
 ```
 
 #### SPFA
 
 spfa算法
 
-底子是： for 所有边a，b，w  
-   $\ \ \ \ \ \ \ \ \ \ \ \ \ \ $dist[b] = min(dist[b], dist[a] + w)
-流程是：
-    queue$\leftarrow$1
-    while queue不空：
-    1. t$\leftarrow$queue.front
-        $\ \ \ \ $q.pop
-        2. 更新t的所有出边t$\stackrel{w}{\longrightarrow}$b
-        $\ \ \ \ $q$\leftarrow$b
+底子是： for 所有边a，b，w 
 
-$\color{red}{spfa求最短路不能处理有自环负权和负权环的情况，这两种情况会在while循环中卡住，所以这题数据不太强}$
+`dist[b] = min(dist[b], dist[a] + w)`
+
+流程是：
+queue $\leftarrow$ 1
+while queue不空：
+    
+1. t$\leftarrow$queue.front(), q.pop();
+        
+2. 更新t的所有出边t$\stackrel{w}{\longrightarrow}$b, q$\leftarrow$b;
+
+<font color=red size=4>
+spfa求最短路不能处理有自环负权和负权环的情况，这两种情况会在while循环中卡住，所以这题数据不太强
+</font>
 
 1.stl queue
 
 ```cpp
-#include <cstring>
-#include <iostream>
-#include <algorithm>
-#include <queue>
-
-using namespace std;
-
-const int N = 100010;
-
 int n, m;
 int h[N], w[N], e[N], ne[N], idx;
 int dist[N];
 bool st[N]; // st数组是判断当前节点是否在队列当中，防止重复入队
 
-void add(int a, int b, int c)
-{
+void add(int a, int b, int c) {
     e[idx] = b, w[idx] = c, ne[idx] = h[a], h[a] = idx ++ ;
 }
 
-int spfa()
-{
+int spfa() {
     memset(dist, 0x3f, sizeof dist);
     dist[1] = 0;
-
     queue<int> q;
     q.push(1);
     st[1] = true;
-
-    while (q.size())
-    {
+    while (q.size()) {
         int t = q.front();
         q.pop();
-
         st[t] = false;
-
-        for (int i = h[t]; i != -1; i = ne[i])
-        {
+        for (int i = h[t]; i != -1; i = ne[i]) {
             int j = e[i];
-            if (dist[j] > dist[t] + w[i])
-            {
+            if (dist[j] > dist[t] + w[i]) {
                 dist[j] = dist[t] + w[i];
-                if (!st[j])
-                {
+                if (!st[j]) {
                     q.push(j);
                     st[j] = true;
                 }
             }
         }
     }
-
     return dist[n];
 }
 
-int main()
 {
-    scanf("%d%d", &n, &m);
-
     memset(h, -1, sizeof h);
-
-    while (m -- )
-    {
-        int a, b, c;
-        scanf("%d%d%d", &a, &b, &c);
-        add(a, b, c);
-    }
-
     int t = spfa();
-
     if (t == 0x3f3f3f3f) puts("impossible");
     else printf("%d\n", t);
-
-    return 0;
 }
-
 ```
 
 循环队列
 
 ```cpp
-#include <iostream>
-#include <cstring>
-
-using namespace std;
-
-const int N = 2510, M = 6200 * 2 + 10;
-
 int n, m, S, T;
 int h[N], e[M], w[M], ne[M], idx;
 int dist[N], q[N];
 bool st[N];
 
-void add(int a, int b, int c){
+void add(int a, int b, int c) {
     e[idx] = b, w[idx] = c, ne[idx] = h[a], h[a] = idx++;
 }
 
-void spfa(){
+void spfa() {
     memset(dist, 0x3f, sizeof dist);
     dist[S] = 0;
+    // hh指向队头元素，tt指向队尾元素的后一个元素。
     int hh = 0, tt = 1;
     q[0] = S, st[S] = true;
     while(hh != tt){
@@ -1010,17 +811,10 @@ void spfa(){
     }
 }
 
-int main(){
-    cin >> n >> m >> S >> T;
+{
     memset(h, -1, sizeof h);
-    for(int i = 0; i < m; i ++){
-        int a, b, c;
-        cin >> a >> b >> c;
-        add(a, b, c), add(b, a, c);
-    }
     spfa();
     cout << dist[T] << endl;
-    return 0;
 }
 ```
 
@@ -1029,14 +823,6 @@ int main(){
 #### kruskal算法
 
 ```cpp
-#include <cstring>
-#include <iostream>
-#include <algorithm>
-
-using namespace std;
-
-const int N = 100010, M = 200010, INF = 0x3f3f3f3f;
-
 int n, m;
 int p[N];
 
@@ -1056,13 +842,11 @@ int kruskal() {
     sort(edges, edges + m);    // 将边按照权重从小到大排序
     for (int i = 1; i <= n; i ++ ) p[i] = i;    // 初始化并查集
     int res = 0, cnt = 0;
-    for (int i = 0; i < m; i ++ )
-    {
+    for (int i = 0; i < m; i ++ ) {
         int a = edges[i].a, b = edges[i].b, w = edges[i].w;
-
         a = find(a), b = find(b);
-        if (a != b)    // 判断两个节点是否在同一个连通块中
-        {
+        // 判断两个节点是否在同一个连通块中
+        if (a != b) {
             p[a] = b;    // 将两个连通块合并
             res += w;    // 将边权重累加到结果中
             cnt ++ ;     // 记录加入生成树的边的数量
@@ -1072,22 +856,15 @@ int kruskal() {
     return res;
 }
 
-int main() {
-    scanf("%d%d", &n, &m);
-
-    for (int i = 0; i < m; i ++ )
-    {
+{
+    for (int i = 0; i < m; i ++ ) {
         int a, b, w;
         scanf("%d%d%d", &a, &b, &w);
         edges[i] = {a, b, w};
     }
-
     int t = kruskal();
-
     if (t == INF) puts("impossible");    // 无法生成最小生成树
     else printf("%d\n", t);             // 输出最小生成树的权重
-
-    return 0;
 }
 ```
 
@@ -1207,10 +984,10 @@ void bfs(int x) {
     int hh = 0, tt = 0;
     q[tt++] = x;
     st[x] = true;
-    while(hh != tt){
+    while (hh != tt) {
         int t = q[hh++];
-        if(hh == N) hh = 0;
-        for(){
+        if (hh == N) hh = 0;
+        for () {
             
         }
     }
@@ -1228,16 +1005,17 @@ int n, m;
 int a[N];
 int tr[N];
 
-int lowbit(int x){ //lowbit这个函数的功能就是求某一个数的二进制表示中最低的一位1，举个例子，
-                    //x = 6，它的二进制为110，那么lowbit(x)就返回2，因为最后一位1表示2
+int lowbit(int x) { 
+    //lowbit这个函数的功能就是求某一个数的二进制表示中最低的一位1，举个例子，
+    //x = 6，它的二进制为110，那么lowbit(x)就返回2，因为最后一位1表示2
     return x & -x;
 }
 
-void add(int x, int v){
+void add(int x, int v) {
     for(int i = x; i <= n; i += lowbit(i)) tr[i] += v;
 }
 
-int query(int x){ //求1~x的和
+int query(int x) { //求1~x的和
     int res = 0;
     for(int i = x; i; i -= lowbit(i)) res += tr[i];
     return res;
@@ -1247,7 +1025,6 @@ int query(int x){ //求1~x的和
 #### 线段树
 
 ```cpp
-const int N = 1e6 + 10;
 int n, m;
 int w[N];
 struct Node{
@@ -1255,13 +1032,13 @@ struct Node{
     int sum;
 }tr[N * 4];
 
-void pushup(int u){
+void pushup(int u) {
     tr[u].sum = tr[u << 1].sum + tr[u << 1 | 1].sum;
 }
 
-void build(int u, int l, int r){
-    if(l == r) tr[u] = {l, r, w[r]};
-    else{
+void build(int u, int l, int r) {
+    if (l == r) tr[u] = {l, r, w[r]};
+    else {
         tr[u] = {l, r};
         int mid = l + r >> 1;
         build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
@@ -1269,20 +1046,20 @@ void build(int u, int l, int r){
     }
 }
 
-int query(int u, int l, int r){
-    if(tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
+int query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
     int mid = tr[u].l + tr[u].r >> 1;
     int sum = 0;
-    if(l <= mid) sum = query(u << 1, l, r);
-    if(r > mid) sum += query(u << 1 | 1, l, r);
+    if (l <= mid) sum = query(u << 1, l, r);
+    if (r > mid) sum += query(u << 1 | 1, l, r);
     return sum;
 }
 
 void modify(int u, int x, int v){
-    if(tr[u].l == tr[u].r) tr[u].sum += v;
+    if (tr[u].l == tr[u].r) tr[u].sum += v;
     else{
         int mid = tr[u].l + tr[u].r >> 1;
-        if(x <= mid) modify(u << 1, x, v);
+        if (x <= mid) modify(u << 1, x, v);
         else modify(u << 1 | 1, x, v);
         pushup(u);
     }
@@ -1295,15 +1072,15 @@ void modify(int u, int x, int v){
 //p[i]存储i节点的祖宗节点，d[i]存储i节点到祖宗节点的距离
 int p[N], d[N];
 //初始化
-void init(){
-    for(int i = 0; i <= n; i ++){
+void init() {
+    for (int i = 0; i <= n; i ++) {
         p[i] = i;
         d[i] = 0;
     }
 }
 //找祖宗节点，同时更新d数组
-int find(int x){
-    if(x != p[x]){
+int find(int x) {
+    if (x != p[x]) {
         int t = find(p[x]);
         //x到祖宗的距离=x到p[x]的距离+p[x]到祖宗的距离
         //这里的距离更新仅仅是更新的d[x]正确（找祖先）的情况下，在做并差集合并时还得手动更新
@@ -1312,7 +1089,7 @@ int find(int x){
     }
     return p[x];
 }
-int find(int x){
+int find (int x) {
     if(x != p[x]) p[x] = find(p[x]);
     return p[x];
 }
@@ -1327,14 +1104,14 @@ int find(int x){
 ```cpp
 int h[N], e[N], ne[N], idx;
 
-void insert(int x){
+void insert(int x) {
     int k = (x % N + N) % N;
     e[idx] = x;
     ne[idx] = h[k];
     h[k] = idx++;
 }
 
-bool find(int x){
+bool find(int x) {
     int k = (x % N + N) % N;
     for(int i = h[k]; i != -1; i = ne[i]){
         if(e[i] == x)
@@ -1351,7 +1128,7 @@ const int N = 200003, null = 0x3f3f3f3f;
 
 int a[N];
 
-int find(int x){
+int find(int x) {
     int k = (x % N + N) % N;
     while(a[k] != null && a[k] != x){
         k ++;
@@ -1368,20 +1145,11 @@ int find(int x){
 1.朴素版本
 
 ```cpp
-#include <iostream>
-
-using namespace std;
-
-const int N = 1010;
 int n;
 int a[N];
 int dp[N]; //dp中存的是以a[i]结尾的子序列的集合中最长的子序列的长度
 
-int main(){
-    cin >> n;
-    for(int i = 1; i <= n; i ++){
-        scanf("%d", &a[i]);
-    }
+{
     for(int i = 1; i <= n; i ++){
         dp[i] = 1;
         for(int j = 1; j < i; j ++){
@@ -1393,61 +1161,38 @@ int main(){
     int ans = 0;
     for(int j = 1; j <= n; j ++) ans = max(ans, dp[j]);
     cout << ans;
-    return 0;
 }
 ```
 
 2.1模拟栈版本
 
 ```cpp
-#include<iostream>
-#include<algorithm>
-#include<vector>
-using namespace std;
-int main(void) {
-    int n; cin >> n;
-    vector<int>arr(n);
-    for (int i = 0; i < n; ++i)cin >> arr[i];
-
-    vector<int>stk;//模拟堆栈
+{
+    vector<int> arr(n);
+    vector<int> stk;//模拟堆栈
     stk.push_back(arr[0]);
-
     for (int i = 1; i < n; ++i) {
-        if (arr[i] > stk.back())//如果该元素大于栈顶元素,将该元素入栈
+        if (arr[i] > stk.back()) //如果该元素大于栈顶元素,将该元素入栈
             stk.push_back(arr[i]);
-        else//替换掉第一个大于或者等于这个数字的那个数
+        else //替换掉第一个大于或者等于这个数字的那个数
             *lower_bound(stk.begin(), stk.end(), arr[i]) = arr[i];
     }
     cout << stk.size() << endl;
-    return 0;
 }
 ```
 
 2.2二分写法
 
 ```cpp
-#include <iostream>
-#include <algorithm>
-
-using namespace std;
-
-const int N = 100010;
-
 int n;
 int a[N];
 int q[N];
 
-int main()
 {
-    scanf("%d", &n);
-    for (int i = 0; i < n; i ++ ) scanf("%d", &a[i]);
-
     int len = 0;
-    for (int i = 0; i < n; i ++ )
-    {
+    for (int i = 0; i < n; i ++) {
         int l = 0, r = len;
-        while (l < r)
-        {
+        while (l < r) {
             int mid = l + r + 1 >> 1;
             if (q[mid] < a[i]) l = mid;
             else r = mid - 1;
@@ -1455,22 +1200,19 @@ int main()
         len = max(len, r + 1);
         q[r + 1] = a[i];
     }
-
     printf("%d\n", len);
-
-    return 0;
 }
 ```
 
 附：最长不下降子序列
 
 ```cpp
-void subseq1(int a[], int l, int r){ // 对原数组的每个下标i(从1开始)，求以a[i]结尾的最长不下降子序列长度
+void subseq1(int a[], int l, int r) { // 对原数组的每个下标i(从1开始)，求以a[i]结尾的最长不下降子序列长度
     int len = 0;
     // q下标从2开始才放如元素,q[i]是有长度为i-1的子序列的最小的末尾值
-    for(int i = l; i <= r; i ++){
+    for (int i = l; i <= r; i ++) {
         int ll = l, rr = len + 1;
-        while(ll < rr){
+        while (ll < rr) {
             int mid = ll + rr + 1 >> 1;
             if(q[mid] <= a[i]) ll = mid;
             else rr = mid - 1;
@@ -1479,9 +1221,9 @@ void subseq1(int a[], int l, int r){ // 对原数组的每个下标i(从1开始)
         q[rr + 1] = a[i];
     }
     // 二分求出以a[i]结尾的最长不下降子序列长度
-    for(int i = l; i <= r; i ++){
+    for (int i = l; i <= r; i ++) {
         int l2 = 2, r2 = len + 1;
-        while(l2 < r2){
+        while (l2 < r2) {
             int mid = l2 + r2 + 1 >> 1;
             if(q[mid] <= a[i]) l2 = mid;
             else r2 = mid - 1;
