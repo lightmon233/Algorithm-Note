@@ -994,6 +994,317 @@ void bfs(int x) {
 }
 ```
 
+#### 单调队列
+
+以滑动窗口为例
+
+```cpp
+int n, k; // k代表滑动窗口的长度
+int a[N], q[N];
+int hh, tt;
+
+{
+    hh = 0, tt = -1;
+    for (int i = 1; i <= n; i ++) {
+        if (hh <= tt && q[hh] < i - k + 1) hh ++;
+        while (hh <= tt && a[q[tt]] >= a[i]) tt --;
+        q[++ tt] = i;
+        if(i >= k) printf("%d ", a[q[hh]]);
+    }
+}
+```
+
+### 栈
+
+#### 一般栈
+
+```cpp
+int m;
+int stack[N], tt;
+
+void push(int x) {
+    stack[++ tt] = x;
+}
+
+void pop() {
+    tt --;
+}
+
+bool empty() {
+    if (tt > 0) return false;
+    return true;
+}
+
+int query() {
+    return stack[tt];
+}
+```
+
+#### 表达式求值
+
+```cpp
+stack<int> num;
+stack<char> op;
+
+void eval(){
+    auto b = num.top(); num.pop();
+    auto a = num.top(); num.pop();
+    auto c = op.top(); op.pop();
+    int x;
+    if(c == '+') x = a + b;
+    else if (c == '-') x = a - b;
+    else if (c == '*') x = a * b;
+    else x = a / b;
+    num.push(x);
+}
+
+{
+    unordered_map<char, int> pr{{'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}};
+    string str;
+    cin >> str;
+    for (int i = 0; i < str.size(); i ++) {
+        auto c = str[i];
+        if (isdigit(c)) {
+            int x = 0, j = i;
+            while (j < str.size() && isdigit(str[j]))
+                x = x * 10 + str[j ++] - '0';
+            i = j - 1;
+            num.push(x);
+        }
+        else if (c == '(') op.push(c);
+        else if (c == ')') {
+            while (op.top() != '(') eval();
+            op.pop();
+        }
+        else {
+            while (op.size() && pr[op.top()] >= pr[c]) eval();
+            op.push(c);
+        }
+    }
+    while (op.size()) eval();
+    cout << num.top() << endl;
+}
+```
+
+#### 单调栈
+
+```cpp
+int stk[N], tt;
+int n;
+int a[N];
+
+{
+    cin >> n;
+    for (int i = 1; i <= n; i ++) scanf("%d", &a[i]);
+    for (int i = 1; i <= n; i ++) {
+        while (tt && stk[tt] >= a[i]) tt --;
+        if (tt) cout << stk[tt] << ' ';
+        else cout << -1 << ' ';
+        stk[++ tt] = a[i];
+    }
+}
+```
+
+### KMP
+
+```cpp
+int n, m;
+char s[1000010], p[100010];
+int ne[100010];
+// ne[1] = 0, ne[2]的值不确定，注意next数组的定义可能会有多种
+// 有些定义下的ne[2]的值必定是1
+
+{
+    cin >> n >> p + 1 >> m >> s + 1;
+    //构造next数组，存储最大公共前后缀
+    //i从2开始，默认ne[1] = 0.
+    for (int i = 2, j = 0; i <= n; i ++) {
+        //求ne[i]的时候ne[i - 1]已经求出来了, 此时j和i-1对齐
+        while (j && p[i] != p[j + 1]) j = ne[j]; //j回滚到当前前缀串的最大公共前缀串
+        if (p[i] == p[j + 1]) j ++; //p[i]与p[j + 1]匹配成功，可以匹配下一个位置, 这里让匹配好的j(p串匹配好的字符数)变成j + 1
+        ne[i] = j;
+    }
+    //匹配sp
+    for (int i = 1, j = 0; i <= m; i ++) {
+        while (j && s[i] != p[j + 1]) j = ne[j];
+        if (s[i] == p[j + 1]) j++;
+        if (j == n) {
+            printf("%d ", i - j);
+            j = ne[j];
+        }
+    }
+}
+```
+
+### TRIE
+
+```cpp
+const int N = 100010; //存的是所有节点的最大个数
+
+int n;
+int son[N][26], cnt[N], idx;
+
+void insert(char str[]) {
+    int p = 0;  // 每次从根节点开始找
+    for (int i = 0; str[i]; i ++) {
+        int u = str[i] - 'a';
+        if (!son[p][u]) son[p][u] = ++idx;
+        p = son[p][u];
+    }
+    cnt[p] ++; //标记不是打在要插入的字符串的最后一个字母对应的节点的下一个节点上的***
+}
+
+int query(char str[]) {
+    int p = 0;
+    for (int i = 0; str[i]; i ++) {
+        int u = str[i] - 'a';
+        if (!son[p][u]) return 0;
+        p = son[p][u];
+    }
+    return cnt[p];
+}
+```
+
+### 堆
+
+```cpp
+int n;
+int h[N], pk[N], kp[N];
+int idx, len; //idx是用来维护第几个插入堆中的点
+
+void hswap(int a, int b){
+    swap(h[a], h[b]);
+    swap(pk[a], pk[b]);
+    swap(kp[pk[a]], kp[pk[b]]);
+}
+
+void up(int u){
+    while(u / 2 && h[u] < h[u / 2]){
+        hswap(u, u / 2);
+        u /= 2;  
+    } 
+}
+
+void down(int u){
+    int t = u;
+    if(u * 2 <= len && h[u * 2] < h[t]) t = u * 2;
+    if(u * 2 + 1 <= len && h[u * 2 + 1] < h[t]) t = u * 2 + 1;
+    if(u != t){
+        hswap(u, t);
+        down(t);
+    }
+}
+
+void insert(int x){
+    h[++len] = x;
+    pk[len] = ++idx;
+    kp[idx] = len;
+    up(len);
+}
+
+void delmin(){
+    hswap(1, len);
+    len --;
+    down(1);
+}
+
+void del(int u){
+    hswap(u, len);
+    len --;
+    down(u);
+    up(u);
+}
+
+// void del(int k){
+//     int t = kp[k];
+//     hswap(kp[k], len);
+//     len --;
+//     up(t);
+//     down(t);
+// }
+
+void change (int u, int x){
+    h[u] = x;
+    up(u), down(u);
+}
+```
+
+
+### 并查集
+
+```cpp
+//p[i]存储i节点的祖宗节点，d[i]存储i节点到祖宗节点的距离
+int p[N], d[N];
+
+//初始化
+void init() {
+    for (int i = 0; i <= n; i ++) {
+        p[i] = i;
+        d[i] = 0;
+    }
+}
+
+//找祖宗节点，同时更新d数组
+int find(int x) {
+    if (x != p[x]) {
+        int t = find(p[x]);
+        //x到祖宗的距离=x到p[x]的距离+p[x]到祖宗的距离
+        //这里的距离更新仅仅是更新的d[x]正确（找祖先）的情况下，在做并差集合并时还得手动更新
+        d[x] = d[x] + d[p[x]];
+        p[x] = t;
+    }
+    return p[x];
+}
+
+int find (int x) {
+    if(x != p[x]) p[x] = find(p[x]);
+    return p[x];
+}
+```
+
+### 哈希表
+
+#### 模拟
+
+##### 拉链法
+
+```cpp
+int h[N], e[N], ne[N], idx;
+
+void insert(int x) {
+    int k = (x % N + N) % N;
+    e[idx] = x;
+    ne[idx] = h[k];
+    h[k] = idx++;
+}
+
+bool find(int x) {
+    int k = (x % N + N) % N;
+    for(int i = h[k]; i != -1; i = ne[i]){
+        if(e[i] == x)
+            return true;
+    }
+    return false;
+}
+```
+
+##### 开放寻址法
+
+```cpp
+const int N = 200003, null = 0x3f3f3f3f;
+
+int a[N];
+
+int find(int x) {
+    int k = (x % N + N) % N;
+    while(a[k] != null && a[k] != x){
+        k ++;
+        if(k == N) k = 0;
+    }
+    return k;
+}
+```
+
 ### 树状数组和线段树
 
 #### 树状数组
@@ -1066,77 +1377,6 @@ void modify(int u, int x, int v){
 }
 ```
 
-### 并查集
-
-```cpp
-//p[i]存储i节点的祖宗节点，d[i]存储i节点到祖宗节点的距离
-int p[N], d[N];
-//初始化
-void init() {
-    for (int i = 0; i <= n; i ++) {
-        p[i] = i;
-        d[i] = 0;
-    }
-}
-//找祖宗节点，同时更新d数组
-int find(int x) {
-    if (x != p[x]) {
-        int t = find(p[x]);
-        //x到祖宗的距离=x到p[x]的距离+p[x]到祖宗的距离
-        //这里的距离更新仅仅是更新的d[x]正确（找祖先）的情况下，在做并差集合并时还得手动更新
-        d[x] = d[x] + d[p[x]];
-        p[x] = t;
-    }
-    return p[x];
-}
-int find (int x) {
-    if(x != p[x]) p[x] = find(p[x]);
-    return p[x];
-}
-```
-
-### 哈希表
-
-#### 模拟
-
-##### 拉链法
-
-```cpp
-int h[N], e[N], ne[N], idx;
-
-void insert(int x) {
-    int k = (x % N + N) % N;
-    e[idx] = x;
-    ne[idx] = h[k];
-    h[k] = idx++;
-}
-
-bool find(int x) {
-    int k = (x % N + N) % N;
-    for(int i = h[k]; i != -1; i = ne[i]){
-        if(e[i] == x)
-            return true;
-    }
-    return false;
-}
-```
-
-##### 开放寻址法
-
-```cpp
-const int N = 200003, null = 0x3f3f3f3f;
-
-int a[N];
-
-int find(int x) {
-    int k = (x % N + N) % N;
-    while(a[k] != null && a[k] != x){
-        k ++;
-        if(k == N) k = 0;
-    }
-    return k;
-}
-```
 
 ## 动态规划
 
