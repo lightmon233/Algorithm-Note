@@ -891,6 +891,65 @@ Kruskal算法是一种贪心算法，其正确性可以通过贪心选择性质�
 
 因此，Kruskal算法的正确性得证。
 
+### LCA(最近公共祖先)
+
+倍增法求LCA的步骤为：
+- 把两个点跳到同一层, 即把下面的x跳到和y同一层
+- 在depth[x] == depth[y]之后，
+    1. x == y 则该点就是x和y的最近公共祖先
+    2. x != y 即他俩同层但不相同，则继续让两个点同时往上跳，一直跳到他们的最近公共祖先的下面一层
+    
+<font color=red>这里跳到最近公共祖先的下一层是因为不这样做的话有可能我们某一次跳过头了，跳过了lca, 来到了lca的某一个祖宗节点上，这样我们就无法判断lca在现处节点下面的哪一层上了</font>
+
+```cpp
+// depth表示某个节点在树中的深度，其中根节点的dpeth为1, 越往下深度越大。
+// fa[i][k]指节点i向上走2^k布所能到达的节点。
+// fa的第二个参数，是向上走的最大距离取log下取整，这里是对点数4e4取log得15
+int depth[N], fa[N][16];
+
+// 通过宽搜来初始化depth和fa数组。
+void bfs(int root) {
+    queue<int> q;
+    memset(depth, 0x3f, sizeof depth);
+    // 这里depth[0] = 0起哨兵作用，以防跳出根节点之上。
+    depth[0] = 0, depth[root] = 1;
+    q.push(root);
+    while (!q.empty()) {
+        int t = q.front();
+        q.pop();
+        for (int i = h[t]; ~i; i = ne[i]) {
+            int j = e[i];
+            if (depth[j] > depth[t] + 1) {
+                depth[j] = depth[t] + 1;
+                q.push(j);
+                fa[j][0] = t;
+                for (int k = 1; k <= 15; k ++) {
+                    fa[j][k] = fa[fa[j][k - 1]][k - 1];
+                }
+            }
+        }
+    }
+}
+
+int lca(int a, int b) {
+    if (depth[a] < depth[b]) swap(a, b);
+    for (int k = 15; k >= 0; k --) {
+        if (depth[fa[a][k]] >= depth[b]) {
+            a = fa[a][k];
+        }
+        // 使a尽量跳到和b同层，并最终一定能跳到。
+    }
+    if (a == b) return a;
+    for (int k = 15; k >= 0; k --) {
+        if (fa[a][k] != fa[b][k]) {
+            a = fa[a][k];
+            b = fa[b][k];
+        }
+    }
+    return fa[a][0];
+}
+```
+
 ## 数据结构
 
 ### 链表
