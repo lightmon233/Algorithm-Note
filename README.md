@@ -950,6 +950,25 @@ int lca(int a, int b) {
 }
 ```
 
+#### dfs版本预处理
+
+```cpp
+void dfs(int u, int dep) {
+    dfn[u] = ++cnt;
+    depth[u] = dep;
+    for (int i = h[u]; ~i; i = ne[i]) {
+        int j = e[i];
+        if (dfn[j]) continue;
+        minv[j] = min(minv[u], w[i]);
+        fa[j][0] = u;
+        for (int k = 1; k <= 18; k ++) {
+            fa[j][k] = fa[fa[j][k - 1]][k - 1];
+        }
+        dfs(j, dep + 1);
+    }
+}
+```
+
 ## 数据结构
 
 ### 链表
