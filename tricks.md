@@ -54,3 +54,7 @@
 
 作者：Hydrogen
 链接：https://www.zhihu.com/question/553587531/answer/2828081213
+
+### 用set求解mex
+
+先把整个数组中出现的数全部放到set中，然后每枚举到一个位置，把当前位置上的数从set中删掉，这样当前前缀的mex就是set中最左的元素*set.begin()
