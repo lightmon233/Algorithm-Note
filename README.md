@@ -1475,7 +1475,7 @@ dfs序（dfn）：优先遍历重儿子，即可保证重链上所有点的编�
 
 重儿子所在的重链的top是他往上的轻儿子，轻儿子所在的重链的top是他自己
 
-![树链剖分](/static/shu_lian_pou_fen.png)
+![树链剖分](/static/img/树链剖分.png)
 
 ```cpp
 int w[N], h[N], e[M], ne[M], idx;
