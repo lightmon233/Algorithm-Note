@@ -1455,6 +1455,58 @@ void modify(int u, int x, int v){
 }
 ```
 
+### 树链剖分（重链剖分）
+
+将树中任意一条路径转化为$O(logn)$段连续区间
+1. 将一棵树转化为一个序列
+2. 树中路径转化为$logn$段连续区间
+
+dfs序（dfn）：优先遍历重儿子，即可保证重链上所有点的编号是连续的，注意这里的dfs是按照优先遍历重儿子来的dfs序
+
+定理：树中任意一条路径均可拆分成$O(logn)$条重链，即可拆分成$O(logn)$段连续区间
+
+重儿子：某个节点的所有子树中size最大的那个的父节点是当前节点的重儿子，其他节点为轻儿子
+
+重边：重儿子往他的父节点去的边
+
+轻边：其他所有边
+
+重链：重边构成的极大的一条链
+
+重儿子所在的重链的top是他往上的轻儿子，轻儿子所在的重链的top是他自己
+
+![树链剖分](/static/shu_lian_pou_fen.png)
+
+```cpp
+int w[N], h[N], e[M], ne[M], idx;
+int id[N], nw[N], cnt;
+int dep[N], sz[N], top[N], fa[N], son[N];
+
+// 预处理出来每个点的重儿子，深度，所在字数大小
+void dfs1(int u, int father, int depth) {
+    dep[u] = depth, fa[u] = father, sz[u] = 1;
+    for (int i = h[u]; ~i; i = ne[i]) {
+        int j = e[i];
+        if (j == father) continue;
+        dfs1(j, u, depth + 1);
+        sz[u] += sz[j];
+        if (sz[son[u]] < sz[j]) son[u] = j;
+    }
+}
+
+// 算出每个节点的dfn序，每个节点所在的重链的顶点是谁
+void dfs2(int u, int t) {
+    id[u] = ++cnt, nw[cnt] = w[u], top[u] = t;
+    if (!son[u]) return;
+    dfs2(son[u], t);
+    for (int i = h[u]; ~i; i = ne[i]) {
+        int j = e[i];
+        if (j == fa[u] || j == son[u]) continue;
+        dfs2(j, j);
+    }
+}
+```
+
 
 ## 动态规划
 
