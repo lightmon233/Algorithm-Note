@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <cmath>
 #include <ctime>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 
 // #pragma O(2)
 // #define int long long
@@ -25,6 +27,7 @@
 // lg(8) = 3, lg(16) = 4, 计算x的以2为底的对数的向下取整, 即x的最高位1的位置
 #define lg(x) __lg(x)
 
+using namespace __gnu_pbds;
 using namespace std;
 
 using LL = long long;
@@ -33,6 +36,7 @@ using PLL = pair<LL, LL>;
 using PDI = pair<double, int>;
 using PDD = pair<double, double>;
 using ULL = unsigned long long;
+template<class T> using sset = tree<T, null_type, less<>, rb_tree_tag, tree_order_statistics_node_update>;
 
 const int mod = 998244353;
 const int N = 1e5 + 10, M = 2e5 + 10;
@@ -79,6 +83,11 @@ int bsearch(int l, int r, function<bool(int)> f) {
         else l = mid + 1;
     }
     return l;
+}
+
+void setIO() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
 }
 
 // 读入优化
