@@ -952,19 +952,21 @@ int lca(int a, int b) {
 
 #### dfs版本预处理
 
+同时顺便求出每个节点向上对应步数的最小的边权
+
 ```cpp
-void dfs(int u, int dep) {
-    dfn[u] = ++cnt;
-    depth[u] = dep;
+void dfs(int u, int fa) {
+    depth[u] = depth[fa] + 1;
+    f[u][0] = fa;
+    for (int i = 1; 1 << i < depth[u]; i ++) {
+        f[u][i] = f[f[u][i - 1]][i - 1];
+        minv[u][i] = min(minv[f[u][i - 1]][i - 1], minv[u][i - 1]);
+    }
     for (int i = h[u]; ~i; i = ne[i]) {
         int j = e[i];
-        if (dfn[j]) continue;
-        minv[j] = min(minv[u], w[i]);
-        fa[j][0] = u;
-        for (int k = 1; k <= 18; k ++) {
-            fa[j][k] = fa[fa[j][k - 1]][k - 1];
-        }
-        dfs(j, dep + 1);
+        if (j == fa) continue;
+        minv[j][0] = w[i];
+        dfs(j, u);
     }
 }
 ```
