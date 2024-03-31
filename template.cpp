@@ -91,16 +91,20 @@ void setIO() {
 }
 
 // 读入优化
-inline int read() {
-    int s = 0, w = 1;
-    char c = getchar();
-    while (c < 48 || c > 57) {
-        if (c == '-') w = -1;
-        c = getchar();
-    }
-    while (c >= 48 && c <= 57)
-        s = (s << 1) + (s << 3) + c - 48, c = getchar();
-    return s * w;
+template<typename T>
+inline T read(){
+	T a = 0;
+    bool s = 0;
+	char ch = getchar();
+	while (ch > '9' || ch < '0'){
+		if (ch == '-') s ^= 1;
+		ch = getchar();
+	}
+	while (ch >= '0' && ch <= '9'){
+		a = (a << 3) + (a << 1) + (ch ^ 48);
+		ch = getchar();
+	}
+	return s ? -a : a;
 }
 
 // 输出优化
