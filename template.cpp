@@ -114,115 +114,18 @@ inline void pf(LL x) {
     putchar(x % 10 + 48);
 }
 
+/*
 // 求组合数
 const int Z = 1e6 + 10;
 int fc[Z], ifc[Z];
 int bin(int n, int m) {
-  if(n < m) return 0;
-  return 1ll * fc[n] * ifc[m] % mod * ifc[n - m] % mod;
+    if (n < m) return 0;
+    return 1ll * fc[n] * ifc[m] % mod * ifc[n - m] % mod;
 }
 void init_fac(int Z) {
-  for(int i = fc[0] = 1; i < Z; i++) fc[i] = 1ll * fc[i - 1] * i % mod;
-  ifc[Z - 1] = qpow(fc[Z - 1], mod - 2);
-  for(int i = Z - 2; ~i; i--) ifc[i] = 1ll * ifc[i + 1] * (i + 1) % mod;
-}
-
-// 线段树
-/*
-struct Node {
-    int l, r, sum, tag;
-}tr[N * 4];
-int planted, plucked;
-
-void pushup(int u) {
-    tr[u].sum = tr[u << 1].sum + tr[u << 1 | 1].sum;
-}
-
-void pushdown(int u) {
-    if (tr[u].tag == -1) return;
-    if (tr[u].l == tr[u].r) return;
-    tr[u << 1].sum = tr[u].tag * tr[u << 1].sum;
-    tr[u << 1 | 1].sum = tr[u].tag * tr[u << 1 | 1].sum;
-    tr[u << 1].tag = tr[u].tag;
-    tr[u << 1 | 1].tag = tr[u].tag;
-    tr[u].tag = -1;
-}
-
-void build(int u, int l, int r) {
-    tr[u] = {l, r, 0, 1};
-    if (l == r) {
-        tr[u].sum = 1;
-        return;
-    }
-    int mid = l + r >> 1;
-    build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
-    pushup(u);
-}
-
-void add(int u, int l, int r) {
-    if (tr[u].l >= l && tr[u].r <= r) {
-        if (tr[u].tag == 1 || tr[u].tag == 2) {
-            return;
-        }
-        if (tr[u].tag == 0) {
-            tr[u].sum = tr[u].r - tr[u].l + 1;
-            tr[u].tag = 2;
-            planted += tr[u].r - tr[u].l + 1;
-            return;
-        }
-        if (tr[u].tag == -1) {
-            add(u << 1, l, r);
-            add(u << 1 | 1, l, r);
-            return;
-        }
-    }
-    pushdown(u);
-    int mid = tr[u].l + tr[u].r >> 1;
-    if (mid >= l) add(u << 1, l, r);
-    if (mid < r) add(u << 1 | 1, l, r);
-    pushup(u);
-}
-
-void remove(int u, int l, int r) {
-    if (tr[u].l >= l && tr[u].r <= r) {
-        if (tr[u].tag == 0) {
-            return;
-        }
-        if (tr[u].tag == 1) {
-            tr[u].sum = 0;
-            tr[u].tag = 0;
-            return;
-        }
-        if (tr[u].tag == 2) {
-            tr[u].sum = 0;
-            tr[u].tag = 0;
-            plucked += tr[u].r - tr[u].l + 1;
-            return;
-        }
-        if (tr[u].tag == -1) {
-            remove(u << 1, l, r);
-            remove(u << 1 | 1, l, r);
-            return;
-        }
-    }
-    pushdown(u);
-    int mid = tr[u].l + tr[u].r >> 1;
-    if (mid >= l) remove(u << 1, l, r);
-    if (mid < r) remove(u << 1 | 1, l, r);
-    pushup(u);
-}
-
-int query(int u, int l, int r) {
-    int res = 0;
-    if (tr[u].l >= l && tr[u].r <= r) {
-        return tr[u].sum;
-    }
-    pushdown(u);
-    int mid = tr[u].l + tr[u].r >> 1;
-    if (mid >= l) res += query(u << 1, l, r);
-    if (mid < r) res += query(u << 1 | 1, l, r);
-    pushup(u);
-    return res;
+    for (int i = fc[0] = 1; i < Z; i++) fc[i] = 1ll * fc[i - 1] * i % mod;
+    ifc[Z - 1] = qpow(fc[Z - 1], mod - 2);
+    for (int i = Z - 2; ~i; i--) ifc[i] = 1ll * ifc[i + 1] * (i + 1) % mod;
 }
 */
 
