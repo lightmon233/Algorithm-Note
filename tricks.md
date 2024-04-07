@@ -72,3 +72,42 @@
 在原数组中，每个元素添加一个出边指向它最终的位置，这样画完出边后，
 
 最少会成一个环，最多n个环。然后原理就是，最少交换次数=结点数n-形成的环数。
+
+### manacher算法
+
+```cpp
+string longest_palindrome(string s) {
+    auto pre_process = [](string s) -> string {
+        int n = s.size();
+        if (n == 0) return "^$";
+        string res = "^";
+        for (int i = 0; i < n; i ++) {
+            res += "#" + s.substr(i, 1);
+        }
+        res += "#$";
+        return res;
+    };
+    string t = pre_process(s);
+    int n = t.size();
+    int *p = new int[n];
+    int C = 0, R = 0;
+    for (int i = 1; i < n - 1; i ++) {
+        int i_mirror = 2 * C - i;
+        p[i] = R > i ? min(R - i, p[i_mirror]) : 0;
+        while (t[i + 1 + p[i]] == t[i - 1 - p[i]]) p[i] ++;
+        if (i + p[i] > R) {
+            C = i;
+            R = i + p[i];
+        }
+    }
+    int max_len = 0, center = 0;
+    for (int i = 1; i < n - 1; i ++) {
+        if (p[i] > max_len) {
+            max_len = p[i];
+            center = i;
+        }
+    }
+    delete[] p;
+    return s.substr((center - max_len) / 2, max_len);
+}
+```
