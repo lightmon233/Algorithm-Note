@@ -1484,7 +1484,7 @@ int w[N], h[N], e[M], ne[M], idx;
 int id[N], nw[N], cnt;
 int dep[N], sz[N], top[N], fa[N], son[N];
 
-// 预处理出来每个点的重儿子，深度，所在字数大小
+// 预处理出来每个点的重儿子，深度，所在子数大小
 void dfs1(int u, int father, int depth) {
     dep[u] = depth, fa[u] = father, sz[u] = 1;
     for (int i = h[u]; ~i; i = ne[i]) {
@@ -1508,6 +1508,10 @@ void dfs2(int u, int t) {
     }
 }
 ```
+
+### 树上启发式合并
+
+
 
 
 ## 动态规划
