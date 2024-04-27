@@ -1511,7 +1511,58 @@ void dfs2(int u, int t) {
 
 ### 树上启发式合并
 
+用同一套数组（当然也可以是其他数据结构）来记录所有子树的信息，在更新新的子树信息前把当前子树的信息存下来。
 
+一般地思考的话，我们可以在每次算完当前子树信息，将要回溯的时候，把数组全部清空，但是这样时间复杂度会达到n^2级别，因此考虑优化。
+
+结论：每次先算轻儿子为根的子树，再算重儿子为根的子树，利用重儿子为根的子树的信息来更新当前节点为根的子树的信息。并且在算完轻儿子为根的子树的信息后清空信息。这样可以把时间复杂度压缩为$O(logn)$
+
+为什么呢？
+
+考虑每个节点对答案的贡献次数，即搜索次数, 即这个点所在的所有子树中，有多少棵会被遍历。由遍历策略导致，只有轻儿子为根的子树才会被重复遍历。因此贡献次数取决于当前节点所在的子树中有多少棵子树是他父节点的轻儿子。换句话来说，就是当前节点到根节点的路径中，有多少条边是轻边。由树链剖分的性质可知最多有$logn$条轻边。
+
+为什么是logn条轻边呢？
+
+因为我们从当前点往上走，每走一条轻边，子树的元素个数至少乘2，因为上面的父节点会有重儿子且不是当前节点。所以最多只能走logn条轻边。
+
+
+```cpp
+void dfs0(int u, int fa) {
+    sz[u] = 1;
+    for (int i = h[u]; ~i; i = ne[i]) {
+        int j = e[i];
+        if (j == fa) continue;
+        dfs0(j, u);
+        sz[u] += sz[j];
+        if (sz[j] > sz[son[u]]) son[u] = j;
+    }
+}
+
+// pson代表当前u的重儿子，即不要重复算重儿子的部分
+void update(int u, int fa, int sign, int pson) {
+    cnt[c[u]] += sign;
+    if (cnt[c[u]] > mx) mx = cnt[c[u]], sum = c[u];
+    else if (cnt[c[u]] == mx) sum += c[u];
+    for (int i = h[u]; ~i; i = ne[i]) {
+        int j = e[i];
+        if (j == fa || j == pson) continue;
+        update(j, u, sign, pson);
+    }
+}
+
+// op代表u是重儿子还是轻儿子
+void dfs(int u, int fa, int op) {
+    for (int i = h[u]; ~i; i = ne[i]) {
+        int j = e[i];
+        if (j == fa || j == son[u]) continue;
+        dfs(j, u, 0);
+    }
+    if (son[u]) dfs(son[u], u, 1);
+    update(u, fa, 1, son[u]);
+    ans[u] = sum;
+    if (!op) update(u, fa, -1, 0), sum = mx = 0;
+}
+```
 
 
 ## 动态规划
