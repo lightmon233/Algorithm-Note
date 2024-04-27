@@ -1504,7 +1504,7 @@ void dfs2(int u, int t) {
     for (int i = h[u]; ~i; i = ne[i]) {
         int j = e[i];
         if (j == fa[u] || j == son[u]) continue;
-        dfs2(j, j);
+        dfs2(j, u);
     }
 }
 ```
