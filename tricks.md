@@ -111,3 +111,7 @@ string longest_palindrome(string s) {
     return s.substr((center - max_len) / 2, max_len);
 }
 ```
+
+## p个人和q件工作
+
+有$p$个人和$q$件工作，第$i$个人的能力值为$a_i$，第i项工作的难度为$b_i$，只有$a_i \ge b_j$才能让第$i$个人做第$x$项工作。每个人最多做一项工作，问所有工作是否都能被完成。
