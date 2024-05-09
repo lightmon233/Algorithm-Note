@@ -52,10 +52,10 @@ mt19937_64 rnd(1064);
 int rd(int l, int r) {return rnd() % (r - l + 1) + l;}
 
 // 取模运算
-void addt(int &x, int y) {x += y, x >= mod && (x -= mod);}
+void plust(int &x, int y) {x += y, x >= mod && (x -= mod);}
 void subt(int &x, int y) {x -= y, x < 0 && (x += mod);}
 void mult(int &x, int y) {x = (LL)x * y % mod;}
-int add(int x, int y) {return x + y >= mod ? x + y - mod : x + y;}
+int plus(int x, int y) {return x + y >= mod ? x + y - mod : x + y;}
 int sub(int x, int y) {return x - y < 0 ? x - y + mod : x - y;}
 int mul(int x, int y) {return (LL)x * y % mod;}
 
