@@ -1604,6 +1604,8 @@ void dfs(int u, int fa, int op) {
 
 前一段从左到右滚，右端点从左滚到了右边接近n的位置，下一次从右到左滚，可以更方便一些，相当于更加顺路了。
 
+如果我们块的大小是$a$的话，那么块的数量就是$\frac{n}{a}$，那么r的复杂度就是$\frac{n}{a}n = \frac{n^2}{a}$，l的复杂度是$qa$（只考虑块内），总复杂度为两者之和，当两者相等时取得最小值，解得$a = \sqrt{\frac{n^2}{q}}$。
+
 ```cpp
 // 代码为统计一段区间上是否有不相同的数，没有输出yes
 int n, q;
@@ -1611,6 +1613,11 @@ int a[N];
 vector<array<int, 3>> v;
 int cnt[210];
 int ans[N];
+int len;
+
+int get(int x) {
+    return x / len;
+}
 
 void adds(int x, int &res) {
     if (!cnt[x]) res ++;
@@ -1624,6 +1631,7 @@ void del(int x, int &res) {
 
 void solve() {
     cin >> n >> q;
+    len = max(1, (int)sqrt((double)n * n / q));
     for (int i = 1; i <= n; i ++) {
         cin >> a[i];
         a[i] += 100;
@@ -1634,7 +1642,8 @@ void solve() {
         v.push_back({i, l, r});
     }
     auto cmp = [&](array<int, 3> &a, array<int, 3> &b) {
-        if (a[1] != b[1]) return a[1] < b[1];
+        int i = get(a[1]), j = get(b[1]);
+        if (i != j) return i < j;
         return a[2] < b[2];
     };
     sort(v.begin(), v.end(), cmp);
