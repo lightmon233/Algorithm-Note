@@ -1564,6 +1564,59 @@ void dfs(int u, int fa, int op) {
 }
 ```
 
+### 莫队
+
+#### 基础莫队
+
+本质是通过排序优化了普通尺取法的时间复杂度。
+
+```cpp
+// 代码为统计一段区间上是否有不相同的数，没有输出yes
+int n, q;
+int a[N];
+vector<array<int, 3>> v;
+int cnt[210];
+int ans[N];
+
+void adds(int x, int &res) {
+    if (!cnt[x]) res ++;
+    cnt[x] ++;
+}
+
+void del(int x, int &res) {
+    cnt[x] --;
+    if (!cnt[x]) res --;
+}
+
+void solve() {
+    cin >> n >> q;
+    for (int i = 1; i <= n; i ++) {
+        cin >> a[i];
+        a[i] += 100;
+    }
+    for (int i = 1; i <= q; i ++) {
+        int l, r;
+        cin >> l >> r;
+        v.push_back({i, l, r});
+    }
+    auto cmp = [&](array<int, 3> &a, array<int, 3> &b) {
+        if (a[1] != b[1]) return a[1] < b[1];
+        return a[2] < b[2];
+    };
+    sort(v.begin(), v.end(), cmp);
+    for (int k = 0, i = 0, j = 1, res = 0; k < q; k ++) {
+        int id = v[k][0], l = v[k][1], r = v[k][2];
+        while (i < r) adds(a[++ i], res);
+        while (i > r) del(a[i --], res);
+        while (j < l) del(a[j ++], res);
+        while (j > l) adds(a[-- j], res);
+        ans[id] = res;
+    }
+    for (int i = 1; i <= q; i ++)
+        if (ans[i] == 1) cout << "YES\n";
+        else cout << "NO\n";
+}
+```
 
 ## 动态规划
 
