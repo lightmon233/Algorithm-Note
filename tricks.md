@@ -123,3 +123,9 @@ string longest_palindrome(string s) {
 把所有数都变成中位数即可（如果长度为偶数，则中间两个数任意选一个）。
 
 ## 尽量不要用cin读入double，速度会很慢！
+
+## 对一个负数取模把它变为正数可以这么做：
+
+```cpp
+x = (x % mod + mod) % mod;
+```
