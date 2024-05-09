@@ -1665,6 +1665,91 @@ void solve() {
 ### 双set实现对顶堆
 
 ```cpp
+multiset<int> s1, s2;
+int l, r, mid;
+int bal = 0;
+
+void init() {
+    s1.clear();
+    s2.clear();
+    s1.insert(-LLF);
+    s2.insert(LLF);
+    l = r = mid = 0;
+    bal = 0;
+}
+
+void add(int x) {
+    if (!bal) {
+        int a = *(--s1.end());
+        int b = *s2.begin();
+        if (a <= x && x <= b) {
+            mid = x;
+        }
+        else if (a > x) {
+            s1.erase(s1.find(a));
+            s1.insert(x);
+            l += x - a;
+            mid = a;
+        }
+        else if (b < x) {
+            s2.erase(s2.find(b));
+            s2.insert(x);
+            r += x - b;
+            mid = b;
+        }
+    }
+    else {
+        if (x >= mid) {
+            s1.insert(mid);
+            l += mid;
+            s2.insert(x);
+            r += x;
+        }
+        else {
+            s2.insert(mid);
+            r += mid;
+            s1.insert(x);
+            l += x;
+        }
+    }
+    bal ^= 1;
+}
+
+void del(int x) {
+    int a = *(--s1.end());
+    int b = *s2.begin();
+    if (!bal) {
+        if (a >= x) {
+            s1.erase(s1.find(x));
+            l -= x;
+            s2.erase(s2.find(b));
+            r -= b;
+            mid = b;
+        }
+        else {
+            s2.erase(s2.find(x));
+            r -= x;
+            s1.erase(s1.find(a));
+            l -= a;
+            mid = a;
+        }
+    }
+    else {
+        if (mid == x) {}
+        else if (x > mid) {
+            s2.erase(s2.find(x));
+            s2.insert(mid);
+            r += mid - x;
+        }
+        else {
+            s1.erase(s1.find(x));
+            s1.insert(mid);
+            l += mid - x;
+        }
+        mid = 0;
+    }
+    bal ^= 1;
+}
 ```
 
 ## 动态规划
