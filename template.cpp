@@ -59,6 +59,12 @@ int plu(int x, int y) {return x + y >= mod ? x + y - mod : x + y;}
 int sub(int x, int y) {return x - y < 0 ? x - y + mod : x - y;}
 int mul(int x, int y) {return (LL)x * y % mod;}
 
+// 判断大小
+template<typename T, typename U>
+void chkmin(T &a, U b) {if (a > b) a = b;}
+template<typename T, typename U>
+void chkmax(T &a, U b) {if (a < b) a = b;}
+
 // 快速幂
 int qpow(int a, int b) {
     int res = 1;
