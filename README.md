@@ -1659,7 +1659,9 @@ void solve() {
 }
 ```
 
-### 双set实现对顶堆
+### 对顶堆
+
+#### 双set版本
 
 ```cpp
 multiset<int> s1, s2;
@@ -1746,6 +1748,46 @@ void del(int x) {
         mid = 0;
     }
     bal ^= 1;
+}
+```
+
+#### 堆带删除操作版
+
+```cpp
+bool inh[N];
+priority_queue<PII> fh;
+priority_queue<PII, vector<PII>, greater<>> sh;
+int fsize, rsize;
+
+void insert(int i) {
+    inh[i] = 1;
+    while (sh.size() && !inh[sh.top().second]) sh.pop();
+    while (fh.size() && !inh[fh.top().second]) fh.pop();
+    sh.emplace(a[i], i);
+    while (fh.size() && sh.size() && fh.top().first > sh.top().first) {
+        res += sh.top().first - fh.top().first;
+        fh.push(sh.top());
+        sh.push(fh.top());
+        fh.pop();
+        sh.pop();
+        while (sh.size() && !inh[sh.top().second]) sh.pop();
+        while (fh.size() && !inh[fh.top().second]) fh.pop();
+    }
+    if (sh.size() && fsize < k) {
+        ++fsize;
+        res += sh.top().first;
+        fh.push(sh.top());
+        sh.pop();
+        while (sh.size() && !inh[sh.top().second]) sh.pop();
+        while (fh.size() && !inh[fh.top().second]) fh.pop();
+    }
+}
+
+void del(int i) {
+    while (sh.size() && !inh[sh.top().second]) sh.pop();
+    while (fh.size() && !inh[fh.top().second]) fh.pop();
+    inh[i] = 0;
+    if (!sh.size() || a[i] < sh.top().first) --fsize, res -= a[i];
 }
 ```
 
