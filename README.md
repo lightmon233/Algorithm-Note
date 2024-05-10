@@ -1665,7 +1665,7 @@ void solve() {
 
 ```cpp
 multiset<int> s1, s2;
-int l, r, mid;
+int sum_l, sum_r, mid;
 int flag = 0;
 
 void init() {
@@ -1673,7 +1673,7 @@ void init() {
     s2.clear();
     s1.insert(-LLF);
     s2.insert(LLF);
-    l = r = mid = 0;
+    sum_l = sum_r = mid = 0;
     flag = 0;
 }
 
@@ -1687,28 +1687,28 @@ void add(int x) {
         else if (a > x) {
             s1.erase(s1.find(a));
             s1.insert(x);
-            l += x - a;
+            sum_l += x - a;
             mid = a;
         }
         else if (b < x) {
             s2.erase(s2.find(b));
             s2.insert(x);
-            r += x - b;
+            sum_r += x - b;
             mid = b;
         }
     }
     else {
         if (x >= mid) {
             s1.insert(mid);
-            l += mid;
+            sum_l += mid;
             s2.insert(x);
-            r += x;
+            sum_r += x;
         }
         else {
             s2.insert(mid);
-            r += mid;
+            sum_r += mid;
             s1.insert(x);
-            l += x;
+            sum_l += x;
         }
     }
     flag ^= 1;
@@ -1720,16 +1720,16 @@ void del(int x) {
     if (!flag) {
         if (a >= x) {
             s1.erase(s1.find(x));
-            l -= x;
+            sum_l -= x;
             s2.erase(s2.find(b));
-            r -= b;
+            sum_r -= b;
             mid = b;
         }
         else {
             s2.erase(s2.find(x));
-            r -= x;
+            sum_r -= x;
             s1.erase(s1.find(a));
-            l -= a;
+            sum_l -= a;
             mid = a;
         }
     }
@@ -1738,12 +1738,12 @@ void del(int x) {
         else if (x > mid) {
             s2.erase(s2.find(x));
             s2.insert(mid);
-            r += mid - x;
+            sum_r += mid - x;
         }
         else {
             s1.erase(s1.find(x));
             s1.insert(mid);
-            l += mid - x;
+            sum_l += mid - x;
         }
         mid = 0;
     }
