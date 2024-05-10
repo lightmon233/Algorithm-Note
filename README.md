@@ -1666,7 +1666,7 @@ void solve() {
 ```cpp
 multiset<int> s1, s2;
 int l, r, mid;
-int bal = 0;
+int flag = 0;
 
 void init() {
     s1.clear();
@@ -1674,11 +1674,11 @@ void init() {
     s1.insert(-LLF);
     s2.insert(LLF);
     l = r = mid = 0;
-    bal = 0;
+    flag = 0;
 }
 
 void add(int x) {
-    if (!bal) {
+    if (!flag) {
         int a = *(--s1.end());
         int b = *s2.begin();
         if (a <= x && x <= b) {
@@ -1711,13 +1711,13 @@ void add(int x) {
             l += x;
         }
     }
-    bal ^= 1;
+    flag ^= 1;
 }
 
 void del(int x) {
     int a = *(--s1.end());
     int b = *s2.begin();
-    if (!bal) {
+    if (!flag) {
         if (a >= x) {
             s1.erase(s1.find(x));
             l -= x;
@@ -1747,7 +1747,7 @@ void del(int x) {
         }
         mid = 0;
     }
-    bal ^= 1;
+    flag ^= 1;
 }
 ```
 
