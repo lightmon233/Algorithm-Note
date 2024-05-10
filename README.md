@@ -299,25 +299,22 @@ $∏\limits_{i=1}\limits^na^{−1}_i∗a_n≡∏\limits^{n-1}_{i=1}a_i^{-1}$
 于是便可以处理处所有元素的逆元：
 
 ```cpp
-/*s是前缀积，inv是逆元*/
+
 s[1] = a[1];
-/*计算前缀积*/
-for(int i = 2;i <= n;i++){
+
+for (int i = 2; i <= n; i ++) {
 	s[i] = s[i - 1] * a[i] % p;
 }
-/*处理所有元素乘积的逆元，使用快速幂发求解单个逆元*/
-inv[n] = fpow(s[n],p - 2);
-/*逆元的前缀积*/
-for(int i = n - 1;i >= 1;i--){
+
+inv[n] = qpow(s[n],p - 2);
+
+for (int i = n - 1; i >= 1; i --) {
 	inv[i] = inv[i + 1] * a[i + 1] % p;
 }
-/*计算全部逆元*/
-for(int i = 2;i <= n;i++){
+
+for (int i = 2; i <= n; i ++) {
 	inv[i] = inv[i] * s[i - 1] % p;
 }
-————————————————
-版权声明：本文为CSDN博主「卷儿~」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/wayne_lee_lwc/article/details/107870741
 ```
 
 ### 扩展欧几里得算法
