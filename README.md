@@ -1805,6 +1805,28 @@ void del(int i) {
 }
 ```
 
+#### 堆仅插入版
+
+```cpp
+priority_queue<int> q1; // 大根堆
+priority_queue<int, vectoor<int>, greater<>> q2; // 小根堆
+
+void insert(int x) {
+    if (!q2.size() || x > q2.top()) q2.push(x);
+    else q1.push(x);
+    if (q1.size() > q2.size() + 1) {
+        q2.push(q1.top());
+        q1.pop();
+    }
+    if (q2.size() > q1.size() + 1) {
+        q1.push(q2.top());
+        q2.pop();
+    }
+}
+```
+
+查询中位数的时候直接取个数较多的堆的堆顶即可。
+
 ## 动态规划
 
 ### 最长上升子序列
