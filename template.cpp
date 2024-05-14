@@ -50,6 +50,7 @@ bool Mbe;
 // mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
 mt19937_64 rnd(1064);
 int rd(int l, int r) {return rnd() % (r - l + 1) + l;}
+double rdd(double l, double r) {return rnd() * (r - l) / rnd.max() + l;}
 
 // 取模运算
 void plut(int &x, int y) {x += y, x >= mod && (x -= mod);}
