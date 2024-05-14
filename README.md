@@ -2212,6 +2212,8 @@ dfs(root);
 
 材料中的原子原来会停留在使内能有局部最小值的位置，加热使能量变大，原子会离开原来的位置，随机在其他位置游走，退火冷却时速度较慢，使得原子有较多可能可以移动到内能比原先更低的位置。
 
+![模拟退火](https://upload.wikimedia.org/wikipedia/commons/d/d5/Hill_Climbing_with_Simulated_Annealing.gif)
+
 ```cpp
 void simulate_anneal() {
     PDD cur(rdd(0, 10000), rdd(0, 10000));
