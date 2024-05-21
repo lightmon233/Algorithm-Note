@@ -1825,6 +1825,42 @@ void insert(int x) {
 }
 ```
 
+### 主席树（可持久化权值线段树）
+
+主要适用于解决在线区间第k小数问题。
+
+```cpp
+struct Node {
+    int lson, rson;
+    int cnt;
+}tr[N * 17 * 18];
+int root[N];
+int c[N];
+int idx;
+
+int insert(int p, int l, int r, int x) {
+    int q = ++idx;
+    tr[q] = tr[p];
+    if (l == r) {
+        tr[q].cnt ++;
+        return q;
+    }
+    int mid = l + r >> 1;
+    if (x <= mid) tr[q].lson = insert(tr[p].lson, l, mid, x);
+    else tr[q].rson = insert(tr[p].rson, mid + 1, r, x);
+    tr[q].cnt = tr[tr[q].lson].cnt + tr[tr[q].rson].cnt;
+    return q;
+}
+
+int query(int q, int p, int l, int r, int k) {
+    if (l == r) return l;
+    int cnt = tr[tr[q].lson].cnt - tr[tr[p].lson].cnt;
+    int mid = l + r >> 1;
+    if (k <= cnt) return query(tr[q].lson, tr[p].lson, l, mid, k);
+    else return query(tr[q].rson, tr[p].rson, mid + 1, r, k - cnt);
+}
+```
+
 查询中位数的时候直接取个数较多的堆的堆顶即可。
 
 ## 动态规划
