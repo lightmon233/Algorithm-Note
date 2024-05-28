@@ -48,7 +48,7 @@ const LL LLF = 0x3f3f3f3f3f3f3f3f;
 bool Mbe;
 
 // 随机数生成器
-// mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+// mt19937_64 rnd(chrono::steady_clock::now().time_since_epoch().count());
 mt19937_64 rnd(1064);
 int rd(int l, int r) {return rnd() % (r - l + 1) + l;}
 double rdd(double l, double r) {return rnd() * (r - l) / rnd.max() + l;}
