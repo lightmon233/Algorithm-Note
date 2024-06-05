@@ -426,10 +426,10 @@ int getPrimes(int n){
 
 ```cpp
 void getPrimes(int n){
-    for(int i = 2; i <= n; i++){
-        if(!st[i]) primes[cnt++] = i; 
+    for (int i = 2; i <= n; i++) {
+        if (!st[i]) primes[cnt++] = i; 
         // primes[j] <= n / i即primes * i <= n，即x <= n
-        for(int j = 0; primes[j] <= n / i; j++){
+        for (int j = 0; primes[j] <= n / i; j ++) {
             // 当还没有执行到下面的break语句时
             // 由于我们是从小到大枚举所有质数的，且还没有枚举到i的最小质因子
             // 所以当前的primes[j]一定是primes[j] * i的最小质因子
