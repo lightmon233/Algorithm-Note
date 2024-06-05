@@ -1022,6 +1022,25 @@ void dfs(int u) {
 
 ![fleury](/static/img/fleury.png)
 
+感觉和dfs算法基本一致，该算法在有桥的时候时间复杂度为$O(m^2)$。
+
+```cpp
+vector<PII> G[10000];
+
+void dfs(int u) {
+	while (G[u].size()) {
+		pii p = G[u].back();
+		G[u].pop_back();
+		if (vis[p.scd]) {
+			continue;
+		}
+		vis[p.scd] = 1;
+		dfs(p.fst);
+	}
+	stk[++top] = pr[u];
+}
+```
+
 ## 数据结构
 
 ### 链表
