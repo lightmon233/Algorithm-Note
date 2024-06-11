@@ -173,3 +173,5 @@ x = (x % mod + mod) % mod;
 ## 质数表
 
 ![质数表](/static/img/质数表.jpg)
+
+![质数分步定律](/static/img/质数分步定律.jpg)
