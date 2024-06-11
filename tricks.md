@@ -169,3 +169,7 @@ x = (x % mod + mod) % mod;
 那么结果集就扩大为了$2^{64}$，和$\frac{n\cdot(n-1)}{2}$相比，冲突的概率就是$\frac{n\cdot(n-1)}{2^{65}}$, 概率大大降低。
 
 ## mt19937_64生成unsigned long long类型随机值，mt19937生成unsigned int类型随机值。
+
+## 质数表
+
+![质数表](/static/img/质数表.jpg)
