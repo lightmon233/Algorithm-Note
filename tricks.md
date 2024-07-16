@@ -175,3 +175,11 @@ x = (x % mod + mod) % mod;
 ![质数表](/static/img/质数表.jpg)
 
 ![质数分步定律](/static/img/质数分步定律.jpg)
+
+## popcount
+
+```cpp
+__builtin_popcount = int
+__builtin_popcountl = long int
+__builtin_popcountll = long long
+```
