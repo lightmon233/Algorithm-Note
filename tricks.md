@@ -185,3 +185,7 @@ __builtin_popcountll = long long
 ```
 
 ## gcd(a, b) <= |a - b|
+
+## $n$最多有$log_{2}n$个不一定完全相同的质因数
+
+因为极限情况是这些质因数全部都是$2$。
