@@ -1527,6 +1527,73 @@ void modify(int u, int x, int v){
 }
 ```
 
+##### 线段树的懒标记
+
+需要区间修改，区间查询的时候使用懒标记
+
+```cpp
+int n;
+int a[N];
+int q;
+string s;
+struct node {
+    int l, r;
+    int flag;
+    int xor_, xor0;
+}tr[N << 2];
+
+void pushup(int u) {
+    tr[u].xor_ = tr[u << 1].xor_ ^ tr[u << 1 | 1].xor_;
+    tr[u].xor0 = tr[u << 1].xor0 ^ tr[u << 1 | 1].xor0;
+}
+
+void build(int u, int l, int r) {
+    if (l == r) {
+        tr[u] = {l, r, 0, a[l], s[l] == '0' ? a[l] : 0};
+        //cout << "tr" << u << ' ' << l << ' ' << r << ' ' << 0 << ' ' << a[l] << ' ' << (s[l] == '0' ? a[l] : 0) << endl;
+    } else {
+        tr[u] = {l, r, 0};
+        int mid = l + r >> 1;
+        build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
+        pushup(u);
+    }
+}
+
+void pushdown(int u) {
+    if (tr[u].l == tr[u].r) return;
+    if (tr[u].flag) {
+        tr[u << 1].flag ^= tr[u].flag;
+        tr[u << 1 | 1].flag ^= tr[u].flag;
+        tr[u << 1].xor0 = tr[u << 1].xor_ ^ tr[u << 1].xor0;
+        tr[u << 1 | 1].xor0 = tr[u << 1 | 1].xor_ ^ tr[u << 1 | 1].xor0;
+        tr[u].flag = 0;
+    }
+}
+
+void modify(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) {
+        tr[u].flag ^= 1;
+        tr[u].xor0 = tr[u].xor_ ^ tr[u].xor0;
+        return;
+    }
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    if (l <= mid) modify(u << 1, l, r);
+    if (r > mid) modify(u << 1 | 1, l, r);
+    pushup(u);
+}
+
+int query(int u, int l, int r) {
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].xor0;
+    pushdown(u);
+    int mid = tr[u].l + tr[u].r >> 1;
+    int res = 0;
+    if (l <= mid) res ^= query(u << 1, l, r);
+    if (r > mid) res ^= query(u << 1 | 1, l, r);
+    return res;
+}
+```
+
 ### 树链剖分（重链剖分）
 
 将树中任意一条路径转化为$O(logn)$段连续区间
