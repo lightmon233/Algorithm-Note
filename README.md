@@ -708,6 +708,74 @@ int dijkstra(){
 }
 ```
 
+[//]: # (打卡模板，上面预览按钮可以展示预览效果 ^^)
+#### bellman-ford算法
+for n次 
+$\ \color{green}{这里迭代n次的含义是从1号点经过不超过n条边走到每个点的最短距离，}$
+$\ \color{green}{如果第n次循环还更新了某些点的最短路距离，即存在1到x的最短路有n条边，这就意味着}$
+$\ \color{green}{这条路上有n+1个点，但实际上只有n个点，则由抽屉原理可知，路上存在至少两点重复}$
+$\ \color{green}{即存在环，而路径上存在环一定是更新过了之后，所以这个环一定是负环。}$
+
+${\ \ \ \ }$for所有边a b w
+${\ \ \ \ \ \ \ \ \ }$dist[b] = min(dist[b], dist[a] + w) $\color{red}{松弛操作}$
+最后有dist[b] <= dist[a] + w $\color{red}{三角不等式}$
+##### PS：
+$\color{red}{如果有负权回路的话，最短路就不一定存在}$
+$\color{red}{只有当这个负环在1号点到n号点的某个路径当中，才不存在最短路径}$
+
+```
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+struct edge{ // bellman-ford算法存边可以任意存，只要能遍历到所有边即可
+    int aa; int bb; int cc;
+};
+
+const int N = 1e4 + 10;
+int n, m, k;
+int dist[N], backup[N];
+int idx;
+edge edges[N];
+
+void add(int a, int b, int c){
+    edges[idx].aa = a;
+    edges[idx].bb = b;
+    edges[idx++].cc = c;
+}
+
+int bellman_ford(){
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    for(int kk = 1; kk <= k; kk++){
+        //这里要加一层备份，因为可能出现在一次迭代中由1更新2，3又被更新后的2更新的情况
+        memcpy(backup, dist, sizeof dist);
+        for(int i = 0; i < m; i++){
+            if(dist[edges[i].bb] > backup[edges[i].aa] + edges[i].cc){
+                dist[edges[i].bb] = backup[edges[i].aa] + edges[i].cc;
+            }
+        }
+    }
+    if(dist[n] > 0x3f3f3f3f / 2) return -0x3f3f3f3f;
+    else return dist[n];
+}
+
+int main(){
+    cin >> n >> m >> k;
+    for(int i = 0; i < m; i++){
+        int a, b, c;
+        cin >> a >> b >> c;
+        add(a, b, c);
+    }
+    int ans = bellman_ford();
+    if(ans == -0x3f3f3f3f) puts("impossible");
+    else cout << ans << endl;
+    return 0;
+}
+
+```
+
 #### SPFA
 
 spfa算法
